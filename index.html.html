@@ -1,0 +1,4627 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiet Progress — Operacja Matura 3.0 (Biologia PR)</title>
+  <style>
+    /* =========================================================================
+       QUIET PROGRESS — DESIGN TOKENS & BASE STYLES
+       Zero external dependencies, system typography with tabular numerals
+       ========================================================================= */
+    :root {
+      --bg-base: #0B0E14;
+      --bg-card: #121824;
+      --bg-card-elevated: #161E2E;
+      --bg-input: #0E131D;
+      --border-subtle: rgba(255, 255, 255, 0.07);
+      --border-hover: rgba(255, 255, 255, 0.14);
+      --border-active: rgba(139, 92, 246, 0.45);
+
+      --text-primary: #F1F5F9;
+      --text-secondary: #94A3B8;
+      --text-muted: #64748B;
+
+      /* Accent Spectrum: Violet -> Cyan -> Emerald -> Amber */
+      --violet: #8B5CF6;
+      --indigo: #6366F1;
+      --cyan: #06B6D4;
+      --teal: #14B8A6;
+      --emerald: #10B981;
+      --amber: #F59E0B;
+      --rose: #F43F5E;
+
+      /* Category Tag Colors */
+      --tag-bio-bg: rgba(16, 185, 129, 0.14);
+      --tag-bio-fg: #34D399;
+      --tag-mat-bg: rgba(139, 92, 246, 0.15);
+      --tag-mat-fg: #A78BFA;
+      --tag-pol-bg: rgba(244, 63, 94, 0.14);
+      --tag-pol-fg: #FB7185;
+      --tag-ang-bg: rgba(6, 182, 212, 0.15);
+      --tag-ang-fg: #22D3EE;
+      --tag-sport-bg: rgba(245, 158, 11, 0.15);
+      --tag-sport-fg: #FBBF24;
+      --tag-reset-bg: rgba(148, 163, 184, 0.14);
+      --tag-reset-fg: #CBD5E1;
+
+      --radius-card: 14px;
+      --radius-md: 10px;
+      --radius-sm: 7px;
+      --radius-pill: 999px;
+      --shadow-card: 0 8px 28px rgba(0, 0, 0, 0.32);
+      --shadow-bar: 0 -10px 40px rgba(0, 0, 0, 0.55);
+      --transition: 180ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      color-scheme: dark;
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background:
+        radial-gradient(900px 500px at 8% -10%, rgba(139, 92, 246, 0.08), transparent 60%),
+        radial-gradient(800px 450px at 92% -5%, rgba(6, 182, 212, 0.07), transparent 60%),
+        var(--bg-base);
+      min-height: 100vh;
+      padding-bottom: 112px; /* Space for sticky Execution Protocol bar */
+      overflow-x: hidden;
+    }
+
+    .tabular {
+      font-variant-numeric: tabular-nums;
+    }
+
+    button, input, select, textarea {
+      font-family: inherit;
+      color: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      transition: background var(--transition), border-color var(--transition), color var(--transition), transform var(--transition), opacity var(--transition);
+    }
+
+    button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+      outline: 2px solid var(--cyan);
+      outline-offset: 2px;
+    }
+
+    /* =========================================================================
+       LAYOUT CONTAINER & HEADER
+       ========================================================================= */
+    .app-shell {
+      max-width: 1560px;
+      margin: 0 auto;
+      padding: 18px 20px 32px;
+    }
+
+    .app-header {
+      background: rgba(18, 24, 36, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-card);
+      padding: 16px 20px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .header-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.28), rgba(6, 182, 212, 0.25));
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .brand-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
+      background: rgba(16, 185, 129, 0.14);
+      color: var(--tag-bio-fg);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+
+    .brand-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    /* Live Countdown Pills */
+    .countdown-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .countdown-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 7px 12px;
+    }
+
+    .countdown-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .countdown-dot.zero {
+      background: var(--amber);
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.65);
+    }
+
+    .countdown-dot.matura {
+      background: var(--emerald);
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.65);
+    }
+
+    .countdown-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: block;
+      line-height: 1.15;
+    }
+
+    .countdown-value {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: block;
+      line-height: 1.2;
+    }
+
+    /* Header Bottom Row: Mode Switcher + Main Tabs + Data Actions */
+    .header-bottom {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 6px;
+      background: var(--bg-input);
+      padding: 4px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .nav-tab {
+      padding: 8px 15px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      white-space: nowrap;
+    }
+
+    .nav-tab:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .nav-tab.active {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.24), rgba(6, 182, 212, 0.18));
+      color: #fff;
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      box-shadow: 0 2px 10px rgba(139, 92, 246, 0.16);
+    }
+
+    .header-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .mode-switcher {
+      display: inline-flex;
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 3px;
+      gap: 3px;
+    }
+
+    .mode-btn {
+      padding: 6px 12px;
+      border-radius: 7px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .mode-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .mode-btn.active.rescue {
+      background: rgba(245, 158, 11, 0.18);
+      color: #FCD34D;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+
+    .mode-btn.active.standard {
+      background: rgba(16, 185, 129, 0.18);
+      color: #6EE7B7;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+
+    .data-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .icon-btn {
+      height: 34px;
+      padding: 0 11px;
+      border-radius: 8px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      font-size: 0.78rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .icon-btn:hover {
+      border-color: var(--border-hover);
+      color: var(--text-primary);
+      background: var(--bg-card-elevated);
+    }
+
+    .icon-btn.danger:hover {
+      border-color: rgba(244, 63, 94, 0.45);
+      color: #FDA4AF;
+      background: rgba(244, 63, 94, 0.1);
+    }
+
+    /* =========================================================================
+       SHARED CARD & UTILITY STYLES
+       ========================================================================= */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-card);
+      padding: 16px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .card-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-meta {
+      font-size: 0.76rem;
+      color: var(--text-secondary);
+    }
+
+    .view-section {
+      display: none;
+      animation: fadeIn 180ms ease;
+    }
+
+    .view-section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      padding: 2px 7px;
+      border-radius: var(--radius-pill);
+      text-transform: uppercase;
+      line-height: 1.3;
+      flex-shrink: 0;
+    }
+
+    .tag-BIO { background: var(--tag-bio-bg); color: var(--tag-bio-fg); }
+    .tag-MAT { background: var(--tag-mat-bg); color: var(--tag-mat-fg); }
+    .tag-POL { background: var(--tag-pol-bg); color: var(--tag-pol-fg); }
+    .tag-ANG { background: var(--tag-ang-bg); color: var(--tag-ang-fg); }
+    .tag-SPORT { background: var(--tag-sport-bg); color: var(--tag-sport-fg); }
+    .tag-RESET { background: var(--tag-reset-bg); color: var(--tag-reset-fg); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--violet), var(--cyan));
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.82rem;
+      padding: 8px 14px;
+      border-radius: 9px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      font-weight: 600;
+      font-size: 0.8rem;
+      padding: 7px 12px;
+      border-radius: 9px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-card-elevated);
+    }
+
+    .input-field, .select-field, .textarea-field {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      border-radius: 9px;
+      padding: 8px 11px;
+      font-size: 0.84rem;
+      color: var(--text-primary);
+      transition: border-color var(--transition);
+    }
+
+    .input-field:focus, .select-field:focus, .textarea-field:focus {
+      border-color: var(--cyan);
+      outline: none;
+    }
+
+    .input-field::placeholder, .textarea-field::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* =========================================================================
+       TAB 1: ANALYTICS STRIP (SVG CHARTS & TRACKERS)
+       ========================================================================= */
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 0.95fr 1.2fr 1fr;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .analytics-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-card);
+      padding: 15px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 158px;
+    }
+
+    .analytics-label {
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .week-ring-wrap {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: auto 0;
+    }
+
+    .week-ring-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .week-ring-big {
+      font-size: 1.55rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+
+    .week-ring-sub {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+    }
+
+    /* PDF Backlog Tracker */
+    .progress-track {
+      width: 100%;
+      height: 7px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-pill);
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: var(--radius-pill);
+      background: linear-gradient(90deg, var(--violet), var(--cyan), var(--emerald));
+      transition: width 320ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .pdf-chips {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .pdf-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      font-size: 0.74rem;
+      color: var(--text-secondary);
+      text-align: left;
+      overflow: hidden;
+    }
+
+    .pdf-chip:hover {
+      border-color: var(--border-hover);
+      color: var(--text-primary);
+    }
+
+    .pdf-chip.done {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.35);
+      color: #A7F3D0;
+    }
+
+    .pdf-check {
+      width: 15px;
+      height: 15px;
+      border-radius: 4px;
+      border: 1.5px solid var(--text-muted);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      font-size: 0.65rem;
+    }
+
+    .pdf-chip.done .pdf-check {
+      background: var(--emerald);
+      border-color: var(--emerald);
+      color: #06281E;
+      font-weight: 800;
+    }
+
+    .pdf-name {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Sport Counters */
+    .sport-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: auto 0;
+    }
+
+    .sport-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .sport-row-top {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+    }
+
+    .sport-row-top strong {
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+
+    .sport-bar {
+      height: 5px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-pill);
+      overflow: hidden;
+    }
+
+    .sport-bar-fill {
+      height: 100%;
+      border-radius: var(--radius-pill);
+      background: linear-gradient(90deg, var(--amber), var(--emerald));
+      transition: width 280ms ease;
+    }
+
+    /* =========================================================================
+       TAB 1: MODE BANNER & WEEK SELECTOR
+       ========================================================================= */
+    .context-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-card);
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .mode-banner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      font-size: 0.82rem;
+    }
+
+    .mode-banner.rescue {
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.12), rgba(139, 92, 246, 0.09));
+      border: 1px solid rgba(245, 158, 11, 0.28);
+      color: #FDE68A;
+    }
+
+    .mode-banner.standard {
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.12), rgba(6, 182, 212, 0.1));
+      border: 1px solid rgba(16, 185, 129, 0.28);
+      color: #A7F3D0;
+    }
+
+    .week-switcher-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .week-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .week-pill {
+      padding: 8px 13px;
+      border-radius: 10px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 155px;
+    }
+
+    .week-pill:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-card-elevated);
+    }
+
+    .week-pill.active {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(6, 182, 212, 0.14));
+      border-color: rgba(139, 92, 246, 0.55);
+    }
+
+    .week-pill-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .week-pill.active .week-pill-top {
+      color: #C4B5FD;
+    }
+
+    .week-pill-name {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .week-scope-box {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .scope-item {
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-size: 0.8rem;
+    }
+
+    .scope-item-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--cyan);
+      font-weight: 700;
+      margin-bottom: 3px;
+      display: block;
+    }
+
+    .scope-item p {
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .standard-topic-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .standard-select-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 260px;
+      max-width: 560px;
+    }
+
+    /* =========================================================================
+       TAB 1: 7-DAY PLANNER GRID & MOBILE DAY SWITCHER
+       ========================================================================= */
+    .mobile-day-bar {
+      display: none;
+      gap: 6px;
+      margin-bottom: 12px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+
+    .mobile-day-bar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .mobile-day-btn {
+      flex: 1 0 auto;
+      min-width: 54px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+    }
+
+    .mobile-day-btn.active {
+      background: var(--bg-card-elevated);
+      border-color: var(--cyan);
+      color: #fff;
+    }
+
+    .mobile-day-pct {
+      font-size: 0.66rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .mobile-day-btn.active .mobile-day-pct {
+      color: var(--cyan);
+    }
+
+    .planner-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+      align-items: start;
+    }
+
+    .day-col {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-card);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 360px;
+      transition: border-color var(--transition);
+    }
+
+    .day-col.is-today {
+      border-color: rgba(6, 182, 212, 0.42);
+      box-shadow: 0 0 0 1px rgba(6, 182, 212, 0.12), var(--shadow-card);
+    }
+
+    .day-col.is-weekend-off {
+      background: linear-gradient(180deg, rgba(16, 185, 129, 0.04), var(--bg-card));
+    }
+
+    .day-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding-bottom: 9px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .day-name-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .day-name {
+      font-size: 0.92rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+
+    .today-pill {
+      font-size: 0.6rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 1px 6px;
+      border-radius: var(--radius-pill);
+      background: rgba(6, 182, 212, 0.18);
+      color: #67E8F9;
+      border: 1px solid rgba(6, 182, 212, 0.32);
+    }
+
+    .day-context {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      line-height: 1.3;
+      margin-top: 2px;
+    }
+
+    .day-ring-svg {
+      flex-shrink: 0;
+    }
+
+    .tasks-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .task-item {
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 9px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      transition: border-color var(--transition), background var(--transition), opacity var(--transition);
+    }
+
+    .task-item:hover {
+      border-color: var(--border-hover);
+      background: #111723;
+    }
+
+    .task-item.done {
+      opacity: 0.62;
+      background: rgba(14, 19, 29, 0.65);
+    }
+
+    .task-item.done .task-text {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .task-item.active-timer-task {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 1px rgba(6, 182, 212, 0.25);
+    }
+
+    .task-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .task-checkbox {
+      width: 18px;
+      height: 18px;
+      border-radius: 5px;
+      border: 1.5px solid var(--text-muted);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+      color: transparent;
+      font-size: 0.72rem;
+      font-weight: 800;
+    }
+
+    .task-checkbox:hover {
+      border-color: var(--emerald);
+    }
+
+    .task-item.done .task-checkbox {
+      background: var(--emerald);
+      border-color: var(--emerald);
+      color: #04251B;
+    }
+
+    .task-text {
+      font-size: 0.8rem;
+      line-height: 1.35;
+      color: var(--text-primary);
+      word-break: break-word;
+      flex: 1;
+      cursor: text;
+    }
+
+    .task-edit-input {
+      width: 100%;
+      background: var(--bg-base);
+      border: 1px solid var(--cyan);
+      border-radius: 6px;
+      padding: 4px 6px;
+      font-size: 0.79rem;
+      color: var(--text-primary);
+    }
+
+    .task-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .task-meta {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .task-mins {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      background: rgba(255, 255, 255, 0.04);
+      padding: 1px 6px;
+      border-radius: 5px;
+    }
+
+    .task-actions {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .task-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: grid;
+      place-items: center;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .task-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-primary);
+    }
+
+    .task-btn.play {
+      color: var(--cyan);
+      background: rgba(6, 182, 212, 0.1);
+    }
+
+    .task-btn.play:hover {
+      background: rgba(6, 182, 212, 0.24);
+      color: #A5F3FC;
+    }
+
+    .task-btn.del:hover {
+      background: rgba(244, 63, 94, 0.16);
+      color: #FDA4AF;
+    }
+
+    .add-task-trigger {
+      width: 100%;
+      padding: 7px 10px;
+      border-radius: 9px;
+      border: 1px dashed rgba(255, 255, 255, 0.12);
+      color: var(--text-muted);
+      font-size: 0.76rem;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .add-task-trigger:hover {
+      border-color: rgba(139, 92, 246, 0.45);
+      color: var(--text-primary);
+      background: rgba(139, 92, 246, 0.06);
+    }
+
+    .add-task-form {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: var(--bg-input);
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      border-radius: 10px;
+      padding: 9px;
+    }
+
+    .add-task-row {
+      display: grid;
+      grid-template-columns: 1fr 72px;
+      gap: 6px;
+    }
+
+    .add-task-actions {
+      display: flex;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+
+    /* =========================================================================
+       TAB 1: BOTTOM WORKSPACE (3 TUTOR QUESTIONS + CKE ERROR NOTEBOOK)
+       ========================================================================= */
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.25fr;
+      gap: 16px;
+    }
+
+    .tutor-slots {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .tutor-slot {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 10px 12px;
+      transition: border-color var(--transition);
+    }
+
+    .tutor-slot.done {
+      border-color: rgba(16, 185, 129, 0.3);
+      opacity: 0.7;
+    }
+
+    .tutor-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 7px;
+      background: rgba(139, 92, 246, 0.16);
+      color: #C4B5FD;
+      font-size: 0.76rem;
+      font-weight: 800;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .tutor-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      resize: none;
+      font-size: 0.83rem;
+      line-height: 1.4;
+      color: var(--text-primary);
+      min-height: 40px;
+    }
+
+    .tutor-slot.done .tutor-input {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .tutor-input:focus {
+      outline: none;
+    }
+
+    /* Error Notebook */
+    .error-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+      background: var(--bg-input);
+      padding: 11px;
+      border-radius: 11px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .error-form-full {
+      grid-column: 1 / -1;
+    }
+
+    .error-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 280px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .error-item {
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .error-item-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .error-topic-pill {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #67E8F9;
+      background: rgba(6, 182, 212, 0.13);
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
+    }
+
+    .error-detail {
+      font-size: 0.8rem;
+      line-height: 1.4;
+      color: var(--text-secondary);
+    }
+
+    .error-detail strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .error-detail.cke strong {
+      color: var(--tag-bio-fg);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 24px 12px;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      border: 1px dashed var(--border-subtle);
+      border-radius: 10px;
+    }
+
+    /* =========================================================================
+       TAB 2: BIOLOGY MAP & LONG-TERM SCHEDULE
+       ========================================================================= */
+    .map-top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .map-overall-card {
+      flex: 1;
+      min-width: 280px;
+    }
+
+    .map-filters {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .filter-pill {
+      padding: 7px 13px;
+      border-radius: var(--radius-pill);
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .filter-pill.active {
+      background: rgba(139, 92, 246, 0.2);
+      border-color: rgba(139, 92, 246, 0.5);
+      color: #fff;
+    }
+
+    .classes-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .class-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-card);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .topic-list {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .topic-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      transition: border-color var(--transition);
+    }
+
+    .topic-row.closed {
+      border-color: rgba(16, 185, 129, 0.28);
+      background: rgba(16, 185, 129, 0.05);
+    }
+
+    .topic-name {
+      font-size: 0.81rem;
+      color: var(--text-primary);
+      font-weight: 500;
+      line-height: 1.3;
+    }
+
+    .topic-row.closed .topic-name {
+      color: #A7F3D0;
+    }
+
+    .stage-pills {
+      display: flex;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+
+    .stage-btn {
+      padding: 4px 8px;
+      border-radius: 7px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      border: 1px solid var(--border-subtle);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .stage-btn:hover {
+      border-color: var(--border-hover);
+      color: var(--text-primary);
+    }
+
+    .stage-btn.on-theory {
+      background: rgba(139, 92, 246, 0.2);
+      border-color: rgba(139, 92, 246, 0.5);
+      color: #DDD6FE;
+    }
+
+    .stage-btn.on-review {
+      background: rgba(6, 182, 212, 0.2);
+      border-color: rgba(6, 182, 212, 0.5);
+      color: #A5F3FC;
+    }
+
+    .stage-btn.on-cke {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: rgba(16, 185, 129, 0.5);
+      color: #A7F3D0;
+    }
+
+    /* Long-term Schedule Section */
+    .longterm-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    .month-card {
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .month-title {
+      font-size: 0.84rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--cyan);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .lt-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .lt-block.active-lt {
+      border-color: var(--emerald);
+      box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.25);
+    }
+
+    .lt-block-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .lt-weeks {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .lt-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.35;
+    }
+
+    .lt-set-btn {
+      align-self: flex-start;
+      padding: 5px 10px;
+      border-radius: 7px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      background: rgba(139, 92, 246, 0.14);
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      color: #DDD6FE;
+    }
+
+    .lt-set-btn:hover {
+      background: rgba(139, 92, 246, 0.26);
+    }
+
+    .lt-block.active-lt .lt-set-btn {
+      background: rgba(16, 185, 129, 0.18);
+      border-color: rgba(16, 185, 129, 0.45);
+      color: #6EE7B7;
+    }
+
+    /* =========================================================================
+       TAB 3: HABITS & TREND
+       ========================================================================= */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-card);
+      padding: 15px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .kpi-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    .kpi-value {
+      font-size: 1.55rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+
+    .kpi-sub {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+
+    .trend-card {
+      margin-bottom: 16px;
+    }
+
+    .habit-matrix-wrap {
+      overflow-x: auto;
+      margin-bottom: 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .habit-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 620px;
+      font-size: 0.8rem;
+    }
+
+    .habit-table th, .habit-table td {
+      padding: 8px 6px;
+      text-align: center;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .habit-table th {
+      background: var(--bg-input);
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    .habit-table th.is-today-col {
+      color: var(--cyan);
+      background: rgba(6, 182, 212, 0.08);
+    }
+
+    .habit-table th:first-child, .habit-table td:first-child {
+      text-align: left;
+      padding-left: 12px;
+      padding-right: 12px;
+      position: sticky;
+      left: 0;
+      background: var(--bg-card);
+      z-index: 2;
+      min-width: 230px;
+      border-right: 1px solid var(--border-subtle);
+    }
+
+    .habit-table th:first-child {
+      background: var(--bg-input);
+      z-index: 3;
+    }
+
+    .habit-name-cell {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .habit-title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .habit-title {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 0.81rem;
+    }
+
+    .habit-type-sub {
+      font-size: 0.67rem;
+      color: var(--text-muted);
+    }
+
+    .habit-cell-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      display: inline-grid;
+      place-items: center;
+      font-size: 0.72rem;
+      color: transparent;
+    }
+
+    .habit-cell-btn:hover {
+      border-color: var(--border-hover);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .habit-cell-btn.done {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.9), rgba(6, 182, 212, 0.85));
+      border-color: transparent;
+      color: #04251B;
+      font-weight: 800;
+    }
+
+    .habit-reset-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3px 5px;
+      border-radius: 6px;
+      background: rgba(148, 163, 184, 0.12);
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      color: var(--text-muted);
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      user-select: none;
+    }
+
+    .habit-add-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      background: var(--bg-input);
+      padding: 12px;
+      border-radius: 11px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    /* =========================================================================
+       STICKY EXECUTION PROTOCOL BAR & EXPANDABLE DRAWER
+       ========================================================================= */
+    .exec-dock {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 60;
+      padding: 0 14px 12px;
+      pointer-events: none;
+    }
+
+    .exec-inner {
+      max-width: 1520px;
+      margin: 0 auto;
+      background: rgba(15, 21, 33, 0.96);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(139, 92, 246, 0.32);
+      border-radius: 16px;
+      box-shadow: var(--shadow-bar);
+      pointer-events: auto;
+      overflow: hidden;
+    }
+
+    .exec-alert-banner {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 16px;
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.24), rgba(244, 63, 94, 0.2));
+      border-bottom: 1px solid rgba(245, 158, 11, 0.45);
+      color: #FEF3C7;
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+
+    .exec-alert-banner.visible {
+      display: flex;
+    }
+
+    .exec-summary-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 16px;
+    }
+
+    .exec-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .exec-timer-readout {
+      font-size: 1.45rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+      min-width: 78px;
+    }
+
+    .exec-timer-readout.running {
+      color: #67E8F9;
+    }
+
+    .exec-timer-readout.cke-mode {
+      color: #FCD34D;
+    }
+
+    .exec-task-info {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .exec-mode-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--violet);
+      font-weight: 700;
+    }
+
+    .exec-task-name {
+      font-size: 0.83rem;
+      color: var(--text-primary);
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 380px;
+    }
+
+    .exec-controls-quick {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .exec-quick-btn {
+      padding: 7px 13px;
+      border-radius: 9px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      background: var(--bg-card-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .exec-quick-btn:hover {
+      border-color: var(--border-hover);
+    }
+
+    .exec-quick-btn.start {
+      background: linear-gradient(135deg, var(--violet), var(--cyan));
+      border-color: transparent;
+      color: #fff;
+    }
+
+    .exec-quick-btn.pause {
+      background: rgba(245, 158, 11, 0.2);
+      border-color: rgba(245, 158, 11, 0.45);
+      color: #FDE68A;
+    }
+
+    .zdarte-mini-dots {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 10px;
+      border-radius: 9px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      font-size: 0.73rem;
+      color: var(--text-secondary);
+    }
+
+    .mini-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .mini-dot.on {
+      background: var(--emerald);
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.65);
+    }
+
+    .exec-drawer {
+      display: none;
+      padding: 14px 16px 16px;
+      border-top: 1px solid var(--border-subtle);
+      background: rgba(11, 14, 20, 0.65);
+      gap: 16px;
+      grid-template-columns: 1.2fr 1fr;
+    }
+
+    .exec-drawer.open {
+      display: grid;
+    }
+
+    .exec-panel-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .preset-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .preset-btn {
+      padding: 6px 11px;
+      border-radius: 8px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+    }
+
+    .preset-btn:hover {
+      border-color: var(--cyan);
+      color: #fff;
+    }
+
+    .preset-btn.active {
+      background: rgba(6, 182, 212, 0.18);
+      border-color: var(--cyan);
+      color: #67E8F9;
+    }
+
+    .zdarte-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .zdarte-slot {
+      padding: 10px 6px;
+      border-radius: 10px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .zdarte-slot:hover {
+      border-color: var(--border-hover);
+      color: var(--text-primary);
+    }
+
+    .zdarte-slot.checked {
+      background: rgba(16, 185, 129, 0.18);
+      border-color: rgba(16, 185, 129, 0.55);
+      color: #6EE7B7;
+    }
+
+    .zdarte-status {
+      font-size: 0.77rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* =========================================================================
+       MODAL & TOASTS (Zero alert() / confirm())
+       ========================================================================= */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 7, 11, 0.78);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 120;
+      padding: 16px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-hover);
+      border-radius: 16px;
+      max-width: 420px;
+      width: 100%;
+      padding: 20px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .modal-title {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .modal-text {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .btn-danger {
+      background: rgba(244, 63, 94, 0.22);
+      border: 1px solid rgba(244, 63, 94, 0.55);
+      color: #FECDD3;
+      padding: 8px 14px;
+      border-radius: 9px;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .btn-danger:hover {
+      background: rgba(244, 63, 94, 0.34);
+    }
+
+    .toast-stack {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 140;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+      max-width: 340px;
+    }
+
+    .toast {
+      background: rgba(22, 30, 46, 0.96);
+      border: 1px solid rgba(6, 182, 212, 0.4);
+      color: var(--text-primary);
+      padding: 10px 14px;
+      border-radius: 11px;
+      font-size: 0.81rem;
+      font-weight: 500;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+      pointer-events: auto;
+      animation: slideIn 220ms ease;
+    }
+
+    .toast.warn {
+      border-color: rgba(245, 158, 11, 0.55);
+      color: #FEF3C7;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(16px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* =========================================================================
+       RESPONSIVE BREAKPOINTS (DESKTOP / TABLET / MOBILE)
+       ========================================================================= */
+    @media (max-width: 1320px) {
+      .planner-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+      .analytics-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 980px) {
+      .classes-grid,
+      .workspace-grid,
+      .exec-drawer {
+        grid-template-columns: 1fr;
+      }
+      .kpi-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .mobile-day-bar {
+        display: flex;
+      }
+      .planner-grid {
+        grid-template-columns: 1fr;
+      }
+      .day-col {
+        display: none;
+        min-height: 260px;
+      }
+      .day-col.mobile-active,
+      .planner-grid.show-all-days .day-col {
+        display: flex;
+      }
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding-bottom: 135px;
+      }
+      .app-shell {
+        padding: 12px 12px 24px;
+      }
+      .analytics-grid,
+      .kpi-grid,
+      .error-form {
+        grid-template-columns: 1fr;
+      }
+      .nav-tabs {
+        width: 100%;
+        justify-content: space-between;
+      }
+      .nav-tab {
+        flex: 1;
+        justify-content: center;
+        padding: 8px 6px;
+        font-size: 0.78rem;
+      }
+      .mode-switcher {
+        width: 100%;
+      }
+      .mode-btn {
+        flex: 1;
+        text-align: center;
+      }
+      .exec-task-name {
+        max-width: 170px;
+      }
+      .topic-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .stage-pills {
+        width: 100%;
+      }
+      .stage-btn {
+        flex: 1;
+        text-align: center;
+      }
+      .week-pill {
+        min-width: calc(50% - 4px);
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- =====================================================================
+         HEADER: BRAND, LIVE COUNTDOWNS, TABS, MODE SWITCHER & DATA ACTIONS
+         ===================================================================== -->
+    <header class="app-header">
+      <div class="header-top">
+        <div class="brand-group">
+          <div class="brand-logo" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="url(#brandGrad)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <defs>
+                <linearGradient id="brandGrad" x1="0" y1="0" x2="24" y2="24">
+                  <stop offset="0%" stop-color="#8B5CF6" />
+                  <stop offset="55%" stop-color="#06B6D4" />
+                  <stop offset="100%" stop-color="#10B981" />
+                </linearGradient>
+              </defs>
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 7v5l3 2" />
+            </svg>
+          </div>
+          <div>
+            <div class="brand-title">
+              Quiet Progress
+              <span class="brand-badge">Biologia PR 2027</span>
+            </div>
+            <div class="brand-subtitle" id="header-date-label">Operacja Matura 3.0 • Spokojna egzekucja bez przepalania</div>
+          </div>
+        </div>
+
+        <div class="countdown-group">
+          <div class="countdown-pill">
+            <span class="countdown-dot zero"></span>
+            <div>
+              <span class="countdown-label">Stan na zero (01.12.2026)</span>
+              <span class="countdown-value tabular" id="cd-stan-zero">—</span>
+            </div>
+          </div>
+          <div class="countdown-pill">
+            <span class="countdown-dot matura"></span>
+            <div>
+              <span class="countdown-label">Matura Biologia PR (10.05.2027)</span>
+              <span class="countdown-value tabular" id="cd-matura">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-bottom">
+        <nav class="nav-tabs" aria-label="Główna nawigacja">
+          <button class="nav-tab active" data-tab="week" id="tab-btn-week">
+            <span>Tydzień</span>
+          </button>
+          <button class="nav-tab" data-tab="map" id="tab-btn-map">
+            <span>Mapa Biologii</span>
+          </button>
+          <button class="nav-tab" data-tab="habits" id="tab-btn-habits">
+            <span>Nawyki &amp; Trend</span>
+          </button>
+        </nav>
+
+        <div class="header-controls">
+          <div class="mode-switcher" role="group" aria-label="Tryb pracy">
+            <button class="mode-btn rescue" id="mode-btn-rescue" data-mode="rescue">Tryb Ratunkowy (XI)</button>
+            <button class="mode-btn standard" id="mode-btn-standard" data-mode="standard">Tryb Standardowy (XII–V)</button>
+          </div>
+
+          <div class="data-actions">
+            <button class="icon-btn" id="btn-export-json" title="Eksportuj cały stan do pliku JSON">Eksport JSON</button>
+            <button class="icon-btn" id="btn-import-json" title="Importuj zapisany stan z pliku JSON">Import JSON</button>
+            <button class="icon-btn danger" id="btn-reset-data" title="Bezpieczny reset wszystkich danych">Reset</button>
+            <input type="file" id="import-file-input" accept="application/json,.json" hidden />
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- =====================================================================
+         TAB 1: TYDZIEŃ (PLANER & TIMEBOXING)
+         ===================================================================== -->
+    <main id="view-week" class="view-section active">
+      <!-- Top Live SVG Analytics Strip -->
+      <section class="analytics-grid" aria-label="Analityka tygodnia">
+        <!-- 1. Daily Activity Bar Chart (SVG) -->
+        <div class="analytics-card">
+          <div class="analytics-label">
+            <span>Aktywność dzienna (min)</span>
+            <span class="tabular" id="activity-total-mins">0 / 0m</span>
+          </div>
+          <div id="activity-bar-svg-wrap" style="width:100%;"></div>
+        </div>
+
+        <!-- 2. Central Week Progress Ring (SVG) -->
+        <div class="analytics-card">
+          <div class="analytics-label">
+            <span>Postęp tygodnia</span>
+            <span class="tabular" id="week-ring-badge">0 zadań</span>
+          </div>
+          <div class="week-ring-wrap">
+            <div id="week-ring-svg-wrap"></div>
+            <div class="week-ring-stats">
+              <div class="week-ring-big tabular" id="week-ring-pct">0%</div>
+              <div class="week-ring-sub tabular" id="week-ring-tasks">0 z 0 zadań</div>
+              <div class="week-ring-sub tabular" id="week-ring-mins">0 z 0 min</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. PDF Backlog Closer -->
+        <div class="analytics-card">
+          <div class="analytics-label">
+            <span>Zaległe PDF-y (Klasa III)</span>
+            <span class="tabular" id="pdf-progress-label">0/4 • 0%</span>
+          </div>
+          <div>
+            <div class="progress-track">
+              <div class="progress-fill" id="pdf-progress-bar" style="width: 0%;"></div>
+            </div>
+            <div class="pdf-chips" id="pdf-chips-container"></div>
+          </div>
+        </div>
+
+        <!-- 4. Sport Counter -->
+        <div class="analytics-card">
+          <div class="analytics-label">
+            <span>Licznik sportu</span>
+            <span class="tabular" id="sport-total-label">0 / 5</span>
+          </div>
+          <div class="sport-list" id="sport-counters-container"></div>
+        </div>
+      </section>
+
+      <!-- Mode Context, Week Selector (Rescue) or Long-Term Topic Selector (Standard) -->
+      <section class="context-panel" id="week-context-panel"></section>
+
+      <!-- Mobile/Tablet Compact Day Switcher -->
+      <div class="mobile-day-bar" id="mobile-day-bar" aria-label="Wybór dnia tygodnia"></div>
+
+      <!-- 7-Day Planner Grid -->
+      <section class="planner-grid" id="planner-grid" aria-label="Planer tygodniowy"></section>
+
+      <!-- Bottom Workspace: 3 Tutor Questions + CKE Error Notebook -->
+      <section class="workspace-grid">
+        <!-- Card 1: Kartka 3 pytań do korepetytora -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Kartka 3 pytań do korepetytora</h2>
+              <span class="card-meta">Konkretne problemy przed czwartkowymi zajęciami (16:30 Basen / 75m korki)</span>
+            </div>
+            <button class="btn-secondary" id="btn-clear-tutor-done">Wyczyść omówione</button>
+          </div>
+          <div class="tutor-slots" id="tutor-slots-container"></div>
+        </div>
+
+        <!-- Card 2: Zeszyt błędów CKE -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Zeszyt błędów CKE</h2>
+              <span class="card-meta">Zapisuj dokładnie brakujące słowa-klucze i mechanizmy</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <select class="select-field" id="error-filter-select" style="width:auto;min-width:140px;padding:6px 10px;font-size:0.78rem;"></select>
+            </div>
+          </div>
+
+          <form class="error-form" id="error-notebook-form">
+            <div class="error-form-full">
+              <select class="select-field" id="err-topic-select" required></select>
+            </div>
+            <input type="text" class="input-field" id="err-mistake-input" placeholder="Mój błąd (np. pominięty kierunek transportu / brak przyczyny)" required />
+            <input type="text" class="input-field" id="err-cke-input" placeholder="Wymaganie klucza CKE (np. limfocyty Th aktywują limfocyty B)" required />
+            <div class="error-form-full" style="display:flex;justify-content:flex-end;">
+              <button type="submit" class="btn-primary">+ Zapisz w zeszycie błędów</button>
+            </div>
+          </form>
+
+          <div class="error-list" id="error-list-container"></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- =====================================================================
+         TAB 2: MAPA BIOLOGII (KL. I–IV & HARMONOGRAM GRUDZIEŃ–KWIECIEŃ)
+         ===================================================================== -->
+    <main id="view-map" class="view-section">
+      <div class="card map-top-bar">
+        <div class="map-overall-card">
+          <div class="card-header" style="margin-bottom:8px;">
+            <h2 class="card-title">Mapa Biologii (Klasy I–IV) — Postęp maturalny</h2>
+            <span class="tabular" id="map-overall-stats" style="font-size:0.84rem;font-weight:700;color:var(--emerald);">0%</span>
+          </div>
+          <div class="progress-track" style="margin-bottom:6px;height:9px;">
+            <div class="progress-fill" id="map-overall-bar" style="width:0%;"></div>
+          </div>
+          <div class="card-meta tabular" id="map-overall-breakdown">Teoria: 0 • Powtórka: 0 • Zadania CKE: 0</div>
+        </div>
+
+        <div class="map-filters">
+          <button class="filter-pill active" data-map-filter="all">Wszystkie</button>
+          <button class="filter-pill" data-map-filter="todo">Do zrobienia</button>
+          <button class="filter-pill" data-map-filter="done">Zamknięte (3/3)</button>
+          <input type="search" class="input-field" id="map-search-input" placeholder="Szukaj tematu..." style="width:190px;padding:7px 11px;" />
+        </div>
+      </div>
+
+      <section class="classes-grid" id="biology-classes-grid"></section>
+
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Plan długofalowy po Stanie Zero (Grudzień–Kwiecień)</h2>
+            <span class="card-meta">Kliknij „Ustaw jako temat tygodnia”, aby zasilić Tryb Standardowy wybranym blokiem</span>
+          </div>
+        </div>
+        <div class="longterm-grid" id="longterm-plan-grid"></div>
+      </section>
+    </main>
+
+    <!-- =====================================================================
+         TAB 3: NAWYKI & TREND
+         ===================================================================== -->
+    <main id="view-habits" class="view-section">
+      <!-- 4 Live KPI Cards -->
+      <section class="kpi-grid" id="habits-kpi-grid"></section>
+
+      <!-- Live SVG Trend Chart -->
+      <section class="card trend-card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Trend regularności</h2>
+            <span class="card-meta" id="trend-subtitle">Inteligentna ochrona odpoczynku: dni RESET nie obniżają wyniku ani nie zrywają passy</span>
+          </div>
+          <div class="mode-switcher">
+            <button class="mode-btn active standard" data-habit-range="7" id="habit-range-7">7 dni</button>
+            <button class="mode-btn" data-habit-range="30" id="habit-range-30">30 dni</button>
+          </div>
+        </div>
+        <div id="habits-trend-svg-wrap" style="width:100%;"></div>
+      </section>
+
+      <!-- Habit Matrix + Add Custom Habit -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Matryca nawyków</h2>
+            <span class="card-meta" id="habit-protection-info">Nawyki naukowe chronią niedzielę jako RESET mentalny</span>
+          </div>
+        </div>
+
+        <div class="habit-matrix-wrap">
+          <table class="habit-table" id="habit-matrix-table"></table>
+        </div>
+
+        <form class="habit-add-form" id="habit-add-form">
+          <input type="text" class="input-field" id="new-habit-name" placeholder="Dodaj własny nawyk (np. Fiszki z metabolizmu 10m)" style="flex:1;min-width:220px;" required />
+          <select class="select-field" id="new-habit-type" style="width:auto;min-width:220px;">
+            <option value="study">Naukowy (z ochroną RESET w dni wolne)</option>
+            <option value="sport">Sportowy (bez blokady weekendowej)</option>
+            <option value="recovery">Regeneracyjny (bez blokady weekendowej)</option>
+          </select>
+          <button type="submit" class="btn-primary">+ Dodaj nawyk</button>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <!-- =======================================================================
+       STICKY EXECUTION PROTOCOL BAR & DRAWER (AVAILABLE ON ALL TABS)
+       ======================================================================= -->
+  <aside class="exec-dock" aria-label="Protokół Egzekucji">
+    <div class="exec-inner">
+      <!-- Completion Alert Banner -->
+      <div class="exec-alert-banner" id="exec-alert-banner" role="status" aria-live="assertive">
+        <span id="exec-alert-text">Zadzwonił stoper = koniec sesji</span>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn-secondary" id="exec-alert-mark-done" style="display:none;padding:5px 10px;font-size:0.76rem;">Odhacz zadanie</button>
+          <button class="btn-secondary" id="exec-alert-dismiss" style="padding:5px 10px;font-size:0.76rem;">Zamknij</button>
+        </div>
+      </div>
+
+      <!-- Compact Always-Visible Bar -->
+      <div class="exec-summary-bar">
+        <div class="exec-left">
+          <div class="exec-timer-readout tabular" id="exec-timer-display">45:00</div>
+          <div class="exec-task-info">
+            <span class="exec-mode-label" id="exec-mode-label">Protokół Egzekucji • Rygor Budzika</span>
+            <span class="exec-task-name" id="exec-active-task-label">Wybierz preset lub kliknij ▶ przy dowolnym zadaniu</span>
+          </div>
+        </div>
+
+        <div class="exec-controls-quick">
+          <div class="zdarte-mini-dots" id="zdarte-mini-indicator" title="Zasada Zdartych Płyt (5 zadań bez klucza + 10 min CKE)">
+            <span>Zdarte Płyty:</span>
+            <span class="mini-dot" data-dot="0"></span>
+            <span class="mini-dot" data-dot="1"></span>
+            <span class="mini-dot" data-dot="2"></span>
+            <span class="mini-dot" data-dot="3"></span>
+            <span class="mini-dot" data-dot="4"></span>
+          </div>
+
+          <button class="exec-quick-btn start" id="exec-btn-toggle">▶ Start</button>
+          <button class="exec-quick-btn" id="exec-btn-reset">Reset</button>
+          <button class="exec-quick-btn" id="exec-btn-expand">Panel ▴</button>
+        </div>
+      </div>
+
+      <!-- Expandable Full Protocol Drawer -->
+      <div class="exec-drawer" id="exec-drawer">
+        <!-- Module 1: Rygor Budzika -->
+        <div class="exec-panel-box">
+          <div class="card-header" style="margin-bottom:0;">
+            <div>
+              <div class="card-title">Rygor Budzika (Stoper Web Audio API)</div>
+              <span class="card-meta">Koniec odliczania = sygnał dźwiękowy i bezwzględny koniec sesji</span>
+            </div>
+            <button class="btn-secondary" id="exec-btn-sound-test" style="padding:5px 9px;font-size:0.72rem;">Test dźwięku</button>
+          </div>
+          <div class="preset-grid" id="exec-preset-grid"></div>
+        </div>
+
+        <!-- Module 2: Zasada Zdartych Płyt -->
+        <div class="exec-panel-box">
+          <div class="card-header" style="margin-bottom:0;">
+            <div>
+              <div class="card-title">Zasada Zdartych Płyt (Seria 5 zadań)</div>
+              <span class="card-meta">Rozwiąż 5 zadań bez zaglądania do klucza → automatyczny timer 10 min CKE</span>
+            </div>
+            <button class="btn-secondary" id="zdarte-btn-reset" style="padding:5px 9px;font-size:0.72rem;">Nowa seria</button>
+          </div>
+
+          <div class="zdarte-grid" id="zdarte-slots-grid"></div>
+
+          <div class="zdarte-status">
+            <span id="zdarte-status-text">Odhaczaj kolejne zadania po ich rozwiązaniu (0/5).</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- =======================================================================
+       CUSTOM CONFIRMATION MODAL (No window.confirm / window.alert)
+       ======================================================================= -->
+  <div class="modal-backdrop" id="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title">
+    <div class="modal-box">
+      <h3 class="modal-title" id="confirm-modal-title">Bezpieczny reset danych</h3>
+      <p class="modal-text" id="confirm-modal-text">
+        Czy na pewno chcesz wyzerować wszystkie postępy w planerze, Mapie Biologii, Zeszycie błędów i Nawykach? Przed resetem możesz pobrać kopię zapasową przez „Eksport JSON”.
+      </p>
+      <div class="modal-actions">
+        <button class="btn-secondary" id="modal-cancel-btn">Anuluj</button>
+        <button class="btn-danger" id="modal-confirm-btn">Tak, zresetuj dane</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-stack" id="toast-stack" aria-live="polite"></div>
+
+  <!-- =======================================================================
+       APPLICATION LOGIC (100% SELF-CONTAINED VANILLA JAVASCRIPT)
+       ======================================================================= -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* -----------------------------------------------------------------------
+         1. CONSTANTS & CURRICULUM METADATA
+         ----------------------------------------------------------------------- */
+      const STORAGE_KEY = 'qp_matura_bio_v3';
+
+      const WEEKDAYS = [
+        { id: 'mon', short: 'PON', label: 'Poniedziałek', color: '#8B5CF6' },
+        { id: 'tue', short: 'WT',  label: 'Wtorek',       color: '#6366F1' },
+        { id: 'wed', short: 'ŚR',  label: 'Środa',        color: '#06B6D4' },
+        { id: 'thu', short: 'CZW', label: 'Czwartek',     color: '#14B8A6' },
+        { id: 'fri', short: 'PT',  label: 'Piątek',       color: '#10B981' },
+        { id: 'sat', short: 'SOB', label: 'Sobota',       color: '#84CC16' },
+        { id: 'sun', short: 'NIE', label: 'Niedziela',    color: '#F59E0B' }
+      ];
+
+      const DAY_CONTEXT_RESCUE = {
+        mon: 'Szkoła do 14:40',
+        tue: 'Szkoła do 12:40 • 17:00 Korki POL',
+        wed: 'Szkoła do 11:45 • NSDR • 18:00 Korki ANG',
+        thu: 'Szkoła do 11:45 • NSDR • 16:30 Basen',
+        fri: 'Szkoła do 13:35',
+        sat: 'Bitwa 9:00–13:00 • Popołudnie wolne',
+        sun: 'Regeneracja • Reset mentalny'
+      };
+
+      const DAY_CONTEXT_STANDARD = {
+        mon: 'Szkoła do 14:40',
+        tue: 'Szkoła do 12:40 • 17:00 Korki POL',
+        wed: 'Szkoła do 11:45 • NSDR • 18:00 Korki ANG',
+        thu: 'Szkoła do 11:45 • NSDR • 16:30 Basen',
+        fri: 'Szkoła do 13:35',
+        sat: 'Wolny weekend • Regeneracja + sport',
+        sun: 'Wolny weekend • Pełny reset'
+      };
+
+      const RESCUE_WEEKS = [
+        {
+          id: 'w1',
+          label: 'Tydzień 1',
+          dates: '04–08.11',
+          title: 'Układ nerwowy',
+          main: 'Potencjał spoczynkowy, iglicowy, przewodzenie skokowe, synapsa chemiczna (Ca²⁺), AUN.',
+          review: 'Powtórka kl. I: chemizm wstęp (woda, makro/mikro).',
+          pdf: 'PDF: Krwionośny zad. 11–36.5.'
+        },
+        {
+          id: 'w2',
+          label: 'Tydzień 2',
+          dates: '09–15.11',
+          title: 'Hormony & Molekularna',
+          main: 'Układ dokrewny, rozród, DNA, replikacja, transkrypcja, translacja (kod genetyczny).',
+          review: 'Powtórka kl. I: cukry, lipidy, białka (wiązania).',
+          pdf: 'PDF: Odpornościowy zad. 11–24 + Moczowy • Bonus 11.11: okno 180 min.'
+        },
+        {
+          id: 'w3',
+          label: 'Tydzień 3',
+          dates: '16–22.11',
+          title: 'Podziały & Mendel',
+          main: 'Cykl komórkowy, mitoza vs mejoza, prawa Mendla, grupy krwi ABO i Rh, krzyżówki.',
+          review: 'Powtórka kl. I: komórka (transport błonowy, organella).',
+          pdf: 'PDF: Oddechowy zad. 1–19.'
+        },
+        {
+          id: 'w4',
+          label: 'Tydzień 4',
+          dates: '23–30.11',
+          title: 'Sprzężenia, Zmienność & Audyt',
+          main: 'Geny sprzężone, crossing-over, morganidy, cechy sprzężone z płcią, mutacje genowe i chromosomowe.',
+          review: 'Powtórka kl. I: enzymy, oddychanie komórkowe + zarys fotosyntezy (faza jasna i ciemna); szybki przegląd tkanek kl. III.',
+          pdf: 'Wielki Audyt 30.11: zamknięcie kluczy CKE → 1 grudnia Stan na zero.'
+        }
+      ];
+
+      const PDF_BACKLOG_META = [
+        { id: 'pdf_krw', label: 'Krwionośny 11–36.5', linkedTopicId: 'c3_uklad_krazenia' },
+        { id: 'pdf_odp', label: 'Odpornościowy 11–24', linkedTopicId: 'c3_uklad_odpornosciowy' },
+        { id: 'pdf_mocz', label: 'Moczowy', linkedTopicId: 'c3_uklad_moczowy' },
+        { id: 'pdf_odd', label: 'Oddechowy 1–19', linkedTopicId: 'c3_uklad_oddechowy' }
+      ];
+
+      const BIOLOGY_CLASSES = [
+        {
+          id: 'c1',
+          name: 'Klasa I — Chemizm, Cytologia & Metabolizm',
+          topics: [
+            { id: 'c1_chemizm', name: 'chemizm wstęp' },
+            { id: 'c1_cukry', name: 'cukry' },
+            { id: 'c1_bialka', name: 'białka' },
+            { id: 'c1_tluszcze', name: 'tłuszcze' },
+            { id: 'c1_kwasy', name: 'kwasy nukleinowe' },
+            { id: 'c1_komorka', name: 'komórka' },
+            { id: 'c1_podzialy', name: 'podziały komórkowe' },
+            { id: 'c1_metab_wstep', name: 'wstęp do metabolizmu' },
+            { id: 'c1_enzymy', name: 'enzymy' },
+            { id: 'c1_fotosynteza', name: 'fotosynteza' },
+            { id: 'c1_oddychanie', name: 'oddychanie komórkowe' },
+            { id: 'c1_inne_metab', name: 'inne procesy metaboliczne' }
+          ]
+        },
+        {
+          id: 'c2',
+          name: 'Klasa II — Systematyka, Botanika & Zoologia',
+          topics: [
+            { id: 'c2_klasyfikacja', name: 'klasyfikacja organizmów' },
+            { id: 'c2_wirusy', name: 'wirusy' },
+            { id: 'c2_bakterie', name: 'bakterie i archeowce' },
+            { id: 'c2_grzyby', name: 'grzyby' },
+            { id: 'c2_protisty', name: 'protisty' },
+            { id: 'c2_rosliny_wstep', name: 'różnorodność roślin wstęp' },
+            { id: 'c2_tkanki_roslinne', name: 'tkanki oraz organy roślinne' },
+            { id: 'c2_mszaki', name: 'mszaki' },
+            { id: 'c2_paprotniki', name: 'paprotniki' },
+            { id: 'c2_nagonasienne', name: 'nagonasienne' },
+            { id: 'c2_okrytonasienne', name: 'okrytonasienne' },
+            { id: 'c2_fizjologia_roslin', name: 'fizjologia roślin' },
+            { id: 'c2_zwierzeta_wstep', name: 'różnorodność zwierząt wstęp' },
+            { id: 'c2_bezkregowce', name: 'bezkręgowce (parzydełkowce, płazińce, nicienie, pierścienice, mięczaki, stawonogi, szkarłupnie)' },
+            { id: 'c2_kregowce', name: 'kręgowce (ryby, płazy, gady, ptaki, ssaki)' }
+          ]
+        },
+        {
+          id: 'c3',
+          name: 'Klasa III — Anatomia & Fizjologia Człowieka',
+          topics: [
+            { id: 'c3_tkanki', name: 'tkanki zwierzęce' },
+            { id: 'c3_powlokowy', name: 'układ powłokowy' },
+            { id: 'c3_szkieletowy', name: 'układ szkieletowy' },
+            { id: 'c3_miesniowy', name: 'układ mięśniowy' },
+            { id: 'c3_pokarmowy', name: 'układ pokarmowy' },
+            { id: 'c3_uklad_oddechowy', name: 'układ oddechowy' },
+            { id: 'c3_uklad_krazenia', name: 'układ krążenia' },
+            { id: 'c3_uklad_odpornosciowy', name: 'układ odpornościowy' },
+            { id: 'c3_uklad_moczowy', name: 'układ moczowy' },
+            { id: 'c3_nerwowy', name: 'układ nerwowy' },
+            { id: 'c3_hormonalny', name: 'układ hormonalny' },
+            { id: 'c3_rozrodczy', name: 'układ rozrodczy' }
+          ]
+        },
+        {
+          id: 'c4',
+          name: 'Klasa IV — Genetyka, Biotechnologia, Ewolucja & Ekologia',
+          topics: [
+            { id: 'c4_gen_mol', name: 'genetyka molekularna' },
+            { id: 'c4_gen_kl1', name: 'genetyka klasyczna cz. 1' },
+            { id: 'c4_gen_kl2', name: 'genetyka klasyczna cz. 2' },
+            { id: 'c4_zmiennosc', name: 'zmienność organizmów' },
+            { id: 'c4_biotech', name: 'biotechnologia' },
+            { id: 'c4_ewolucjonizm', name: 'ewolucjonizm' },
+            { id: 'c4_ekologia', name: 'ekologia' }
+          ]
+        }
+      ];
+
+      const LONG_TERM_PLAN = [
+        { id: 'lt_dec_1', month: 'Grudzień', weeks: 'Tydz. 1–2', title: 'Biotechnologia' },
+        { id: 'lt_dec_2', month: 'Grudzień', weeks: 'Tydz. 3–4', title: 'Ewolucjonizm' },
+        { id: 'lt_jan_1', month: 'Styczeń',  weeks: 'Tydz. 1–2', title: 'Ekologia' },
+        { id: 'lt_jan_2', month: 'Styczeń',  weeks: 'Tydz. 3–4', title: 'Klasyfikacja organizmów + wirusy i bakterie z praktyką' },
+        { id: 'lt_feb_1', month: 'Luty',     weeks: 'Tydz. 1–4', title: 'Tkanki roślinne, mszaki, paprotniki, nagonasienne, okrytonasienne + praktyka' },
+        { id: 'lt_mar_1', month: 'Marzec',   weeks: 'Tydz. 1–2', title: 'Fizjologia roślin' },
+        { id: 'lt_mar_2', month: 'Marzec',   weeks: 'Tydz. 2–4', title: 'Bezkręgowce + praktyka' },
+        { id: 'lt_apr_1', month: 'Kwiecień', weeks: 'Tydz. 1–2', title: 'Kręgowce + praktyka' },
+        { id: 'lt_apr_2', month: 'Kwiecień', weeks: 'Tydz. 3–4', title: 'Pełne arkusze maturalne' }
+      ];
+
+      const TIMER_PRESETS = [15, 30, 45, 60, 75, 90, 105, 120];
+
+      /* -----------------------------------------------------------------------
+         2. HELPER FUNCTIONS (DATES, IDS, ESCAPING)
+         ----------------------------------------------------------------------- */
+      function uid(prefix) {
+        return prefix + '_' + Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-3);
+      }
+
+      function escapeHtml(str) {
+        return String(str ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function getLocalDateKey(dateObj) {
+        const d = dateObj instanceof Date ? dateObj : new Date();
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+      }
+
+      function parseLocalDateKey(key) {
+        const [y, m, d] = key.split('-').map(Number);
+        return new Date(y, m - 1, d);
+      }
+
+      function getTodayDayId() {
+        const jsDay = new Date().getDay(); // 0=Sun..6=Sat
+        const map = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+        return map[jsDay];
+      }
+
+      function getRecentDateKeys(count) {
+        const keys = [];
+        const base = new Date();
+        base.setHours(12, 0, 0, 0);
+        for (let i = count - 1; i >= 0; i--) {
+          const d = new Date(base);
+          d.setDate(base.getDate() - i);
+          keys.push(getLocalDateKey(d));
+        }
+        return keys;
+      }
+
+      function formatShortDatePl(key) {
+        const d = parseLocalDateKey(key);
+        const dayNames = ['Nd', 'Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'Sb'];
+        return {
+          dow: dayNames[d.getDay()],
+          num: String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0'),
+          jsDay: d.getDay()
+        };
+      }
+
+      function isProtectedRestDay(jsDay, mode) {
+        // Sunday is always protected RESET for study habits; in Standard Mode Saturday is also protected
+        if (jsDay === 0) return true;
+        if (mode === 'standard' && jsDay === 6) return true;
+        return false;
+      }
+
+      function buildRescueWeekTasks(weekId) {
+        const p = (day, idx) => `${weekId}_${day}_${idx}`;
+        return {
+          mon: [
+            { id: p('mon', 1), text: 'Teoria tygodnia na głos bez notatek', cat: 'BIO', mins: 75, done: false },
+            { id: p('mon', 2), text: 'Mini-powtórka kl. I', cat: 'BIO', mins: 30, done: false },
+            { id: p('mon', 3), text: 'Bieg wieczorny', cat: 'SPORT', mins: 45, done: false },
+            { id: p('mon', 4), text: 'Notatka', cat: 'POL', mins: 15, done: false }
+          ],
+          tue: [
+            { id: p('tue', 1), text: 'Zadania maturalne z tematu głównego', cat: 'BIO', mins: 90, done: false },
+            { id: p('tue', 2), text: 'Siłownia', cat: 'SPORT', mins: 60, done: false },
+            { id: p('tue', 3), text: '5 pewniaków maturalnych', cat: 'MAT', mins: 30, done: false }
+          ],
+          wed: [
+            { id: p('wed', 1), text: 'Trudne zadania CKE („wykaż związek”)', cat: 'BIO', mins: 105, done: false },
+            { id: p('wed', 2), text: 'Dokończenie PDF / zaległy układ kl. III / braki CKE', cat: 'BIO', mins: 45, done: false },
+            { id: p('wed', 3), text: 'Szybkie liczenie', cat: 'MAT', mins: 30, done: false }
+          ],
+          thu: [
+            { id: p('thu', 1), text: 'Praca z korepetytorem i weryfikacja trudności', cat: 'BIO', mins: 75, done: false },
+            { id: p('thu', 2), text: 'Basen 16:30', cat: 'SPORT', mins: 60, done: false },
+            { id: p('thu', 3), text: 'Deload (regeneracja z polskiego)', cat: 'POL', mins: 0, done: false }
+          ],
+          fri: [
+            { id: p('fri', 1), text: 'Symulacja testu tygodnia z Gemini/CKE', cat: 'BIO', mins: 90, done: false },
+            { id: p('fri', 2), text: 'Weryfikacja kluczy i zeszyt błędów', cat: 'BIO', mins: 30, done: false },
+            { id: p('fri', 3), text: 'Siłownia', cat: 'SPORT', mins: 60, done: false },
+            { id: p('fri', 4), text: 'Audyt 15m', cat: 'BIO', mins: 15, done: false }
+          ],
+          sat: [
+            { id: p('sat', 1), text: 'Arkusze CKE (Bitwa poranna)', cat: 'BIO', mins: 120, done: false },
+            { id: p('sat', 2), text: 'Czyszczenie rubryk w planerze', cat: 'BIO', mins: 60, done: false },
+            { id: p('sat', 3), text: 'Mały arkusz PP', cat: 'MAT', mins: 60, done: false }
+          ],
+          sun: [
+            { id: p('sun', 1), text: 'Pełny reset mentalny — zero pracy przy biurku', cat: 'RESET', mins: 0, done: false },
+            { id: p('sun', 2), text: 'Lekki bieg poranny', cat: 'SPORT', mins: 40, done: false }
+          ]
+        };
+      }
+
+      function buildStandardTasksForTopic(ltId, topicTitle) {
+        const p = (day, idx) => `${ltId}_${day}_${idx}`;
+        return {
+          mon: [
+            { id: p('mon', 1), text: `Teoria na głos: ${topicTitle}`, cat: 'BIO', mins: 60, done: false },
+            { id: p('mon', 2), text: 'Lektury i notatka problemowa', cat: 'POL', mins: 45, done: false },
+            { id: p('mon', 3), text: 'Bieg wieczorny', cat: 'SPORT', mins: 45, done: false }
+          ],
+          tue: [
+            { id: p('tue', 1), text: `Zadania maturalne CKE: ${topicTitle}`, cat: 'BIO', mins: 75, done: false },
+            { id: p('tue', 2), text: 'Blok zadań maturalnych PP', cat: 'MAT', mins: 60, done: false },
+            { id: p('tue', 3), text: 'Siłownia', cat: 'SPORT', mins: 60, done: false }
+          ],
+          wed: [
+            { id: p('wed', 1), text: `Trudne zadania CKE („wykaż związek”): ${topicTitle}`, cat: 'BIO', mins: 90, done: false },
+            { id: p('wed', 2), text: 'Zadania otwarte / arkusz', cat: 'MAT', mins: 60, done: false },
+            { id: p('wed', 3), text: 'Słownictwo i wypowiedź pisemna', cat: 'ANG', mins: 30, done: false }
+          ],
+          thu: [
+            { id: p('thu', 1), text: `Praca z korepetytorem: ${topicTitle}`, cat: 'BIO', mins: 75, done: false },
+            { id: p('thu', 2), text: 'Wypracowanie / test historycznoliteracki', cat: 'POL', mins: 45, done: false },
+            { id: p('thu', 3), text: 'Basen 16:30', cat: 'SPORT', mins: 60, done: false }
+          ],
+          fri: [
+            { id: p('fri', 1), text: `Symulacja testu + zeszyt błędów: ${topicTitle}`, cat: 'BIO', mins: 75, done: false },
+            { id: p('fri', 2), text: 'Zestaw powtórkowy + analiza błędów', cat: 'MAT', mins: 60, done: false },
+            { id: p('fri', 3), text: 'Siłownia', cat: 'SPORT', mins: 60, done: false }
+          ],
+          sat: [
+            { id: p('sat', 1), text: 'Wolna sobota — zero ciężkich bloków przy biurku', cat: 'RESET', mins: 0, done: false },
+            { id: p('sat', 2), text: 'Bieg / aktywność regeneracyjna', cat: 'SPORT', mins: 45, done: false }
+          ],
+          sun: [
+            { id: p('sun', 1), text: 'Pełny reset mentalny przed nowym tygodniem', cat: 'RESET', mins: 0, done: false }
+          ]
+        };
+      }
+
+      /* -----------------------------------------------------------------------
+         3. DEFAULT STATE & PERSISTENCE (qp_matura_bio_v3)
+         ----------------------------------------------------------------------- */
+      function createDefaultState() {
+        const rescueWeeks = {};
+        RESCUE_WEEKS.forEach(w => {
+          rescueWeeks[w.id] = buildRescueWeekTasks(w.id);
+        });
+
+        const standardWeeks = {};
+        LONG_TERM_PLAN.forEach(lt => {
+          standardWeeks[lt.id] = buildStandardTasksForTopic(lt.id, lt.title);
+        });
+
+        const bioMap = {};
+        BIOLOGY_CLASSES.forEach(cls => {
+          cls.topics.forEach(t => {
+            bioMap[t.id] = { theory: false, review: false, cke: false };
+          });
+        });
+
+        return {
+          version: 3,
+          activeTab: 'week',
+          mode: 'rescue', // 'rescue' | 'standard'
+          activeRescueWeek: 'w3', // Default to Week 3 (finisz listopadowy, 21.11)
+          activeLongTermId: 'lt_dec_1',
+          mobileSelectedDay: getTodayDayId(),
+          mobileShowAllDays: false,
+          rescueWeeks,
+          standardWeeks,
+          pdfBacklog: {
+            pdf_krw: false,
+            pdf_odp: false,
+            pdf_mocz: false,
+            pdf_odd: false
+          },
+          tutorQuestions: [
+            { text: '', done: false },
+            { text: '', done: false },
+            { text: '', done: false }
+          ],
+          errorNotebook: [],
+          errorFilter: 'ALL',
+          bioMap,
+          mapFilter: 'all',
+          mapSearch: '',
+          habitRange: 7,
+          habits: [
+            { id: 'hab_voice',  name: 'Teoria na głos',                     type: 'study' },
+            { id: 'hab_zdarte', name: 'Seria 5 zadań + 10 min klucza CKE',  type: 'study' },
+            { id: 'hab_alarm',  name: 'Rygor Budzika',                      type: 'study' },
+            { id: 'hab_nsdr',   name: 'NSDR / drzemka (śr/czw)',            type: 'recovery' },
+            { id: 'hab_errors', name: 'Zeszyt błędów CKE',                  type: 'study' },
+            { id: 'hab_sport',  name: 'Trening (siłka/bieg/basen)',         type: 'sport' }
+          ],
+          habitLogs: {}, // { 'YYYY-MM-DD': { habitId: true } }
+          zdarteSlots: [false, false, false, false, false]
+        };
+      }
+
+      function validateAndMergeState(raw) {
+        const def = createDefaultState();
+        if (!raw || typeof raw !== 'object') return def;
+
+        const merged = {
+          ...def,
+          activeTab: ['week', 'map', 'habits'].includes(raw.activeTab) ? raw.activeTab : def.activeTab,
+          mode: ['rescue', 'standard'].includes(raw.mode) ? raw.mode : def.mode,
+          activeRescueWeek: RESCUE_WEEKS.some(w => w.id === raw.activeRescueWeek) ? raw.activeRescueWeek : def.activeRescueWeek,
+          activeLongTermId: LONG_TERM_PLAN.some(lt => lt.id === raw.activeLongTermId) ? raw.activeLongTermId : def.activeLongTermId,
+          mobileSelectedDay: WEEKDAYS.some(d => d.id === raw.mobileSelectedDay) ? raw.mobileSelectedDay : def.mobileSelectedDay,
+          mobileShowAllDays: Boolean(raw.mobileShowAllDays),
+          errorFilter: typeof raw.errorFilter === 'string' ? raw.errorFilter : 'ALL',
+          mapFilter: ['all', 'todo', 'done'].includes(raw.mapFilter) ? raw.mapFilter : 'all',
+          mapSearch: typeof raw.mapSearch === 'string' ? raw.mapSearch : '',
+          habitRange: raw.habitRange === 30 ? 30 : 7
+        };
+
+        // Merge rescueWeeks safely
+        if (raw.rescueWeeks && typeof raw.rescueWeeks === 'object') {
+          RESCUE_WEEKS.forEach(w => {
+            if (raw.rescueWeeks[w.id] && typeof raw.rescueWeeks[w.id] === 'object') {
+              WEEKDAYS.forEach(d => {
+                if (Array.isArray(raw.rescueWeeks[w.id][d.id])) {
+                  merged.rescueWeeks[w.id][d.id] = raw.rescueWeeks[w.id][d.id]
+                    .filter(t => t && typeof t.text === 'string')
+                    .map(t => ({
+                      id: typeof t.id === 'string' ? t.id : uid('tsk'),
+                      text: t.text,
+                      cat: ['BIO', 'MAT', 'POL', 'ANG', 'SPORT', 'RESET'].includes(t.cat) ? t.cat : 'BIO',
+                      mins: Math.max(0, Math.min(480, Number(t.mins) || 0)),
+                      done: Boolean(t.done)
+                    }));
+                }
+              });
+            }
+          });
+        }
+
+        // Merge standardWeeks safely
+        if (raw.standardWeeks && typeof raw.standardWeeks === 'object') {
+          LONG_TERM_PLAN.forEach(lt => {
+            if (raw.standardWeeks[lt.id] && typeof raw.standardWeeks[lt.id] === 'object') {
+              WEEKDAYS.forEach(d => {
+                if (Array.isArray(raw.standardWeeks[lt.id][d.id])) {
+                  merged.standardWeeks[lt.id][d.id] = raw.standardWeeks[lt.id][d.id]
+                    .filter(t => t && typeof t.text === 'string')
+                    .map(t => ({
+                      id: typeof t.id === 'string' ? t.id : uid('tsk'),
+                      text: t.text,
+                      cat: ['BIO', 'MAT', 'POL', 'ANG', 'SPORT', 'RESET'].includes(t.cat) ? t.cat : 'BIO',
+                      mins: Math.max(0, Math.min(480, Number(t.mins) || 0)),
+                      done: Boolean(t.done)
+                    }));
+                }
+              });
+            }
+          });
+        }
+
+        // PDF backlog
+        if (raw.pdfBacklog && typeof raw.pdfBacklog === 'object') {
+          PDF_BACKLOG_META.forEach(p => {
+            merged.pdfBacklog[p.id] = Boolean(raw.pdfBacklog[p.id]);
+          });
+        }
+
+        // Tutor 3 questions
+        if (Array.isArray(raw.tutorQuestions)) {
+          for (let i = 0; i < 3; i++) {
+            if (raw.tutorQuestions[i] && typeof raw.tutorQuestions[i] === 'object') {
+              merged.tutorQuestions[i] = {
+                text: typeof raw.tutorQuestions[i].text === 'string' ? raw.tutorQuestions[i].text : '',
+                done: Boolean(raw.tutorQuestions[i].done)
+              };
+            }
+          }
+        }
+
+        // Error notebook
+        if (Array.isArray(raw.errorNotebook)) {
+          merged.errorNotebook = raw.errorNotebook
+            .filter(e => e && typeof e.mistake === 'string' && typeof e.cke === 'string')
+            .map(e => ({
+              id: typeof e.id === 'string' ? e.id : uid('err'),
+              topic: typeof e.topic === 'string' ? e.topic : 'Ogólny',
+              mistake: e.mistake,
+              cke: e.cke,
+              date: typeof e.date === 'string' ? e.date : getLocalDateKey()
+            }));
+        }
+
+        // Biology Map
+        if (raw.bioMap && typeof raw.bioMap === 'object') {
+          Object.keys(def.bioMap).forEach(tid => {
+            if (raw.bioMap[tid] && typeof raw.bioMap[tid] === 'object') {
+              merged.bioMap[tid] = {
+                theory: Boolean(raw.bioMap[tid].theory),
+                review: Boolean(raw.bioMap[tid].review),
+                cke: Boolean(raw.bioMap[tid].cke)
+              };
+            }
+          });
+        }
+
+        // Habits & Logs
+        if (Array.isArray(raw.habits) && raw.habits.length > 0) {
+          merged.habits = raw.habits
+            .filter(h => h && typeof h.name === 'string' && h.name.trim())
+            .map(h => ({
+              id: typeof h.id === 'string' ? h.id : uid('hab'),
+              name: h.name.trim(),
+              type: ['study', 'sport', 'recovery'].includes(h.type) ? h.type : 'study'
+            }));
+        }
+
+        if (raw.habitLogs && typeof raw.habitLogs === 'object') {
+          merged.habitLogs = {};
+          Object.keys(raw.habitLogs).forEach(dateKey => {
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateKey) && raw.habitLogs[dateKey] && typeof raw.habitLogs[dateKey] === 'object') {
+              merged.habitLogs[dateKey] = {};
+              Object.keys(raw.habitLogs[dateKey]).forEach(hid => {
+                if (raw.habitLogs[dateKey][hid]) merged.habitLogs[dateKey][hid] = true;
+              });
+            }
+          });
+        }
+
+        if (Array.isArray(raw.zdarteSlots) && raw.zdarteSlots.length === 5) {
+          merged.zdarteSlots = raw.zdarteSlots.map(Boolean);
+        }
+
+        return merged;
+      }
+
+      function loadState() {
+        try {
+          const serialized = localStorage.getItem(STORAGE_KEY);
+          if (!serialized) return createDefaultState();
+          const parsed = JSON.parse(serialized);
+          return validateAndMergeState(parsed);
+        } catch (err) {
+          console.warn('Nie udało się wczytać stanu z localStorage, przywrócono domyślny:', err);
+          return createDefaultState();
+        }
+      }
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (err) {
+          console.error('Błąd zapisu stanu w localStorage:', err);
+          showToast('Uwaga: nie udało się zapisać danych w pamięci przeglądarki.', 'warn');
+        }
+      }
+
+      let state = loadState();
+      let openAddFormDayId = null;
+
+      /* -----------------------------------------------------------------------
+         4. WEB AUDIO API ALARM SYNTHESIZER (ZERO EXTERNAL AUDIO FILES)
+         ----------------------------------------------------------------------- */
+      const AudioEngine = {
+        ctx: null,
+        ensureContext() {
+          try {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return null;
+            if (!this.ctx) this.ctx = new AudioCtx();
+            if (this.ctx.state === 'suspended') {
+              this.ctx.resume().catch(() => {});
+            }
+            return this.ctx;
+          } catch (e) {
+            return null;
+          }
+        },
+        playChime(variant) {
+          const ctx = this.ensureContext();
+          if (!ctx) return;
+          try {
+            const now = ctx.currentTime;
+            // Clean resonant triad bell for alarm completion or CKE key timer completion
+            const notes = variant === 'cke'
+              ? [587.33, 739.99, 880.00, 1174.66] // D5 - F#5 - A5 - D6
+              : [523.25, 659.25, 783.99, 1046.50, 783.99]; // C5 - E5 - G5 - C6 - G5
+
+            notes.forEach((freq, idx) => {
+              const osc = ctx.createOscillator();
+              const gain = ctx.createGain();
+              osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
+              osc.frequency.setValueAtTime(freq, now + idx * 0.16);
+
+              gain.gain.setValueAtTime(0.0001, now + idx * 0.16);
+              gain.gain.exponentialRampToValueAtTime(0.22, now + idx * 0.16 + 0.025);
+              gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.16 + 0.55);
+
+              osc.connect(gain);
+              gain.connect(ctx.destination);
+              osc.start(now + idx * 0.16);
+              osc.stop(now + idx * 0.16 + 0.58);
+            });
+          } catch (e) {
+            // Silently ignore audio restrictions
+          }
+        }
+      };
+
+      /* -----------------------------------------------------------------------
+         5. EXECUTION PROTOCOL TIMER ENGINE (RYGOR BUDZIKA + ZDARTE PŁYTY)
+         ----------------------------------------------------------------------- */
+      const timer = {
+        mode: 'alarm', // 'alarm' | 'cke'
+        totalSeconds: 45 * 60,
+        remainingSeconds: 45 * 60,
+        running: false,
+        intervalId: null,
+        activeTaskMeta: null, // { dayId, taskId, text, cat }
+        drawerOpen: false
+      };
+
+      function formatClock(totalSec) {
+        const clamped = Math.max(0, Math.floor(totalSec));
+        const mins = Math.floor(clamped / 60);
+        const secs = clamped % 60;
+        return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      }
+
+      function stopTimerInterval() {
+        if (timer.intervalId) {
+          clearInterval(timer.intervalId);
+          timer.intervalId = null;
+        }
+        timer.running = false;
+      }
+
+      function setTimerDuration(minutes, mode, taskMeta) {
+        stopTimerInterval();
+        timer.mode = mode || 'alarm';
+        timer.totalSeconds = minutes * 60;
+        timer.remainingSeconds = minutes * 60;
+        timer.activeTaskMeta = taskMeta || null;
+        hideExecAlert();
+        renderExecutionBar();
+        if (state.activeTab === 'week') renderPlannerGrid();
+      }
+
+      function startTimer() {
+        AudioEngine.ensureContext();
+        if (timer.remainingSeconds <= 0) {
+          timer.remainingSeconds = timer.totalSeconds;
+        }
+        if (timer.running) return;
+        hideExecAlert();
+        timer.running = true;
+        timer.intervalId = setInterval(() => {
+          timer.remainingSeconds -= 1;
+          if (timer.remainingSeconds <= 0) {
+            timer.remainingSeconds = 0;
+            stopTimerInterval();
+            handleTimerFinished();
+          }
+          updateTimerDisplayOnly();
+        }, 1000);
+        renderExecutionBar();
+      }
+
+      function pauseTimer() {
+        stopTimerInterval();
+        renderExecutionBar();
+      }
+
+      function resetTimer() {
+        stopTimerInterval();
+        timer.remainingSeconds = timer.totalSeconds;
+        hideExecAlert();
+        renderExecutionBar();
+      }
+
+      function handleTimerFinished() {
+        if (timer.mode === 'cke') {
+          AudioEngine.playChime('cke');
+          showExecAlert('Koniec 10 min weryfikacji z kluczem CKE — wpisz brakujące słowa-klucze do Zeszytu błędów!', false);
+          autoTickHabitToday('hab_zdarte');
+          showToast('Seria 5 zadań + 10 min klucza CKE zakończona! Nawyk podbity.');
+        } else {
+          AudioEngine.playChime('alarm');
+          showExecAlert('Zadzwonił stoper = koniec sesji', Boolean(timer.activeTaskMeta));
+          autoTickHabitToday('hab_alarm');
+        }
+        document.title = '⏰ Koniec sesji — Quiet Progress';
+        renderExecutionBar();
+      }
+
+      function showExecAlert(message, canMarkTaskDone) {
+        const banner = document.getElementById('exec-alert-banner');
+        const text = document.getElementById('exec-alert-text');
+        const markBtn = document.getElementById('exec-alert-mark-done');
+        text.textContent = message;
+        markBtn.style.display = canMarkTaskDone ? 'inline-flex' : 'none';
+        banner.classList.add('visible');
+      }
+
+      function hideExecAlert() {
+        document.getElementById('exec-alert-banner').classList.remove('visible');
+        document.title = 'Quiet Progress — Operacja Matura 3.0 (Biologia PR)';
+      }
+
+      function updateTimerDisplayOnly() {
+        const el = document.getElementById('exec-timer-display');
+        if (!el) return;
+        const formatted = formatClock(timer.remainingSeconds);
+        el.textContent = formatted;
+        if (timer.running) {
+          document.title = `${formatted} • Quiet Progress`;
+        }
+      }
+
+      /* -----------------------------------------------------------------------
+         6. CROSS-VIEW SMART INTEGRATION HELPERS
+         ----------------------------------------------------------------------- */
+      function getActiveWeekObj() {
+        if (state.mode === 'rescue') {
+          return state.rescueWeeks[state.activeRescueWeek];
+        }
+        return state.standardWeeks[state.activeLongTermId];
+      }
+
+      function autoTickHabitToday(habitId) {
+        const todayKey = getLocalDateKey();
+        const habit = state.habits.find(h => h.id === habitId);
+        if (!habit) return;
+        const jsDay = new Date().getDay();
+        if (habit.type === 'study' && isProtectedRestDay(jsDay, state.mode)) {
+          return; // Respect smart rest protection
+        }
+        if (!state.habitLogs[todayKey]) state.habitLogs[todayKey] = {};
+        if (!state.habitLogs[todayKey][habitId]) {
+          state.habitLogs[todayKey][habitId] = true;
+          saveState();
+          if (state.activeTab === 'habits') renderHabitsView();
+        }
+      }
+
+      function syncTaskCheckWithHabits(task) {
+        if (!task.done) return;
+        const txt = task.text.toLowerCase();
+        if (task.cat === 'SPORT') {
+          autoTickHabitToday('hab_sport');
+        }
+        if (txt.includes('na głos') || txt.includes('teoria')) {
+          autoTickHabitToday('hab_voice');
+        }
+        if (txt.includes('zeszyt błędów') || txt.includes('klucz')) {
+          autoTickHabitToday('hab_errors');
+        }
+      }
+
+      function showToast(msg, type) {
+        const stack = document.getElementById('toast-stack');
+        const el = document.createElement('div');
+        el.className = 'toast' + (type === 'warn' ? ' warn' : '');
+        el.textContent = msg;
+        stack.appendChild(el);
+        setTimeout(() => {
+          el.style.opacity = '0';
+          el.style.transform = 'translateX(14px)';
+          el.style.transition = 'opacity 220ms ease, transform 220ms ease';
+          setTimeout(() => el.remove(), 240);
+        }, 3200);
+      }
+
+      /* -----------------------------------------------------------------------
+         7. RENDER: HEADER & LIVE COUNTDOWNS
+         ----------------------------------------------------------------------- */
+      function renderHeader() {
+        const now = new Date();
+        const todayMid = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const stanZeroDate = new Date(2026, 11, 1); // 1 Dec 2026
+        const maturaDate = new Date(2027, 4, 10);   // 10 May 2027
+
+        const diffZero = Math.round((stanZeroDate - todayMid) / 86400000);
+        const diffMatura = Math.round((maturaDate - todayMid) / 86400000);
+
+        const cdZeroEl = document.getElementById('cd-stan-zero');
+        const cdMaturaEl = document.getElementById('cd-matura');
+
+        if (diffZero > 0) {
+          cdZeroEl.textContent = `${diffZero} ${diffZero === 1 ? 'dzień' : 'dni'}`;
+        } else if (diffZero === 0) {
+          cdZeroEl.textContent = 'DZIŚ • Stan Zero!';
+        } else {
+          cdZeroEl.textContent = `Osiągnięty (+${Math.abs(diffZero)}d)`;
+        }
+
+        if (diffMatura > 0) {
+          cdMaturaEl.textContent = `${diffMatura} ${diffMatura === 1 ? 'dzień' : 'dni'}`;
+        } else if (diffMatura === 0) {
+          cdMaturaEl.textContent = 'DZIŚ MATURA!';
+        } else {
+          cdMaturaEl.textContent = 'Po egzaminie';
+        }
+
+        const plDate = now.toLocaleDateString('pl-PL', {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        });
+        document.getElementById('header-date-label').textContent =
+          `Operacja Matura 3.0 • ${plDate.charAt(0).toUpperCase() + plDate.slice(1)}`;
+
+        // Active Tab
+        document.querySelectorAll('.nav-tab').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.tab === state.activeTab);
+        });
+        document.querySelectorAll('.view-section').forEach(sec => {
+          sec.classList.toggle('active', sec.id === `view-${state.activeTab}`);
+        });
+
+        // Active Mode
+        const btnRescue = document.getElementById('mode-btn-rescue');
+        const btnStandard = document.getElementById('mode-btn-standard');
+        btnRescue.classList.toggle('active', state.mode === 'rescue');
+        btnStandard.classList.toggle('active', state.mode === 'standard');
+      }
+
+      /* -----------------------------------------------------------------------
+         8. RENDER TAB 1: ANALYTICS, CONTEXT PANEL, 7-DAY PLANNER & WORKSPACE
+         ----------------------------------------------------------------------- */
+      function renderAnalyticsStrip() {
+        const weekData = getActiveWeekObj();
+
+        let totalTasks = 0;
+        let doneTasks = 0;
+        let totalMins = 0;
+        let doneMins = 0;
+
+        let gymDone = 0;
+        let runDone = 0;
+        let swimDone = 0;
+
+        const dayStats = WEEKDAYS.map(d => {
+          const list = weekData[d.id] || [];
+          let dPlannedMins = 0;
+          let dDoneMins = 0;
+          let dDoneTasks = 0;
+          list.forEach(t => {
+            totalTasks += 1;
+            totalMins += t.mins;
+            dPlannedMins += t.mins;
+            if (t.done) {
+              doneTasks += 1;
+              doneMins += t.mins;
+              dDoneMins += t.mins;
+              dDoneTasks += 1;
+              if (t.cat === 'SPORT') {
+                const lower = t.text.toLowerCase();
+                if (/siłown|siłk|gym/.test(lower)) gymDone += 1;
+                else if (/basen|pływ/.test(lower)) swimDone += 1;
+                else if (/bieg|rozruch|spacer|aktywno/.test(lower)) runDone += 1;
+              }
+            }
+          });
+          return {
+            ...d,
+            plannedMins: dPlannedMins,
+            doneMins: dDoneMins,
+            totalTasks: list.length,
+            doneTasks: dDoneTasks
+          };
+        });
+
+        // 1) Daily Activity SVG Bar Chart
+        document.getElementById('activity-total-mins').textContent = `${doneMins} / ${totalMins}m`;
+        const maxVal = Math.max(60, ...dayStats.map(s => Math.max(s.plannedMins, s.doneMins)));
+        const chartW = 280;
+        const chartH = 88;
+        const barW = 22;
+        const gap = (chartW - 7 * barW) / 6;
+
+        let barsSvg = `<svg viewBox="0 0 ${chartW} ${chartH + 20}" width="100%" height="104" role="img" aria-label="Wykres aktywności dziennej">`;
+        dayStats.forEach((s, i) => {
+          const x = i * (barW + gap);
+          const plannedH = Math.max(4, Math.round((s.plannedMins / maxVal) * chartH));
+          const doneH = s.doneMins > 0 ? Math.max(5, Math.round((s.doneMins / maxVal) * chartH)) : 0;
+          const plannedY = chartH - plannedH;
+          const doneY = chartH - doneH;
+          barsSvg += `
+            <g>
+              <title>${s.label}: ukończono ${s.doneMins} z ${s.plannedMins} min (${s.doneTasks}/${s.totalTasks} zadań)</title>
+              <rect x="${x}" y="${plannedY}" width="${barW}" height="${plannedH}" rx="5" fill="rgba(255,255,255,0.07)" />
+              ${doneH > 0 ? `<rect x="${x}" y="${doneY}" width="${barW}" height="${doneH}" rx="5" fill="${s.color}" />` : ''}
+              <text x="${x + barW / 2}" y="${chartH + 15}" text-anchor="middle" fill="#94A3B8" font-size="9.5" font-weight="600">${s.short}</text>
+            </g>
+          `;
+        });
+        barsSvg += `</svg>`;
+        document.getElementById('activity-bar-svg-wrap').innerHTML = barsSvg;
+
+        // 2) Central Week Progress Ring (SVG)
+        const weekPct = totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0;
+        const r = 38;
+        const circ = 2 * Math.PI * r;
+        const dashOffset = circ * (1 - weekPct / 100);
+        document.getElementById('week-ring-svg-wrap').innerHTML = `
+          <svg width="92" height="92" viewBox="0 0 92 92" role="img" aria-label="Postęp tygodnia ${weekPct}%">
+            <defs>
+              <linearGradient id="weekRingGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#8B5CF6" />
+                <stop offset="50%" stop-color="#06B6D4" />
+                <stop offset="100%" stop-color="#10B981" />
+              </linearGradient>
+            </defs>
+            <circle cx="46" cy="46" r="${r}" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="8" />
+            <circle cx="46" cy="46" r="${r}" fill="none" stroke="url(#weekRingGrad)" stroke-width="8"
+              stroke-linecap="round"
+              stroke-dasharray="${circ.toFixed(2)}"
+              stroke-dashoffset="${dashOffset.toFixed(2)}"
+              transform="rotate(-90 46 46)" />
+          </svg>
+        `;
+        document.getElementById('week-ring-pct').textContent = `${weekPct}%`;
+        document.getElementById('week-ring-badge').textContent = `${doneTasks}/${totalTasks} zadań`;
+        document.getElementById('week-ring-tasks').textContent = `${doneTasks} z ${totalTasks} zadań`;
+        document.getElementById('week-ring-mins').textContent = `${doneMins} z ${totalMins} min`;
+
+        // 3) PDF Backlog Tracker
+        const pdfDoneCount = PDF_BACKLOG_META.filter(p => state.pdfBacklog[p.id]).length;
+        const pdfPct = Math.round((pdfDoneCount / PDF_BACKLOG_META.length) * 100);
+        document.getElementById('pdf-progress-label').textContent = `${pdfDoneCount}/${PDF_BACKLOG_META.length} • ${pdfPct}%`;
+        document.getElementById('pdf-progress-bar').style.width = `${pdfPct}%`;
+
+        document.getElementById('pdf-chips-container').innerHTML = PDF_BACKLOG_META.map(p => {
+          const isDone = Boolean(state.pdfBacklog[p.id]);
+          return `
+            <button class="pdf-chip ${isDone ? 'done' : ''}" data-pdf-toggle="${p.id}" title="${escapeHtml(p.label)}">
+              <span class="pdf-check">${isDone ? '✓' : ''}</span>
+              <span class="pdf-name">${escapeHtml(p.label)}</span>
+            </button>
+          `;
+        }).join('');
+
+        // 4) Sport Counter (Siłownia 0/2, Bieg 0/2, Basen 0/1)
+        const sportItems = [
+          { label: 'Siłownia', done: gymDone, target: 2 },
+          { label: 'Bieg',     done: runDone, target: 2 },
+          { label: 'Basen',    done: swimDone, target: 1 }
+        ];
+        const totalSportDone = Math.min(2, gymDone) + Math.min(2, runDone) + Math.min(1, swimDone);
+        document.getElementById('sport-total-label').textContent = `${totalSportDone} / 5`;
+
+        document.getElementById('sport-counters-container').innerHTML = sportItems.map(item => {
+          const pct = Math.min(100, Math.round((item.done / item.target) * 100));
+          return `
+            <div class="sport-row">
+              <div class="sport-row-top">
+                <span>${item.label}</span>
+                <strong class="tabular">${item.done}/${item.target}</strong>
+              </div>
+              <div class="sport-bar">
+                <div class="sport-bar-fill" style="width:${pct}%"></div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function getWeekCompletionPercent(weekObj) {
+        let total = 0, done = 0;
+        WEEKDAYS.forEach(d => {
+          (weekObj[d.id] || []).forEach(t => {
+            total += 1;
+            if (t.done) done += 1;
+          });
+        });
+        return total > 0 ? Math.round((done / total) * 100) : 0;
+      }
+
+      function renderWeekContextPanel() {
+        const panel = document.getElementById('week-context-panel');
+
+        if (state.mode === 'rescue') {
+          const activeMeta = RESCUE_WEEKS.find(w => w.id === state.activeRescueWeek) || RESCUE_WEEKS[2];
+          const w1Pct = getWeekCompletionPercent(state.rescueWeeks.w1);
+          const w2Pct = getWeekCompletionPercent(state.rescueWeeks.w2);
+          const earlierDone = w1Pct === 100 && w2Pct === 100;
+
+          panel.innerHTML = `
+            <div class="mode-banner rescue">
+              <div>
+                <strong>Tryb Ratunkowy (Listopad)</strong> — Zasada redukcji MAT/POL do trybu podtrzymującego na rzecz <strong>+7,5 h/tyg.</strong> dla Biologii PR (cel: 1 grudnia Stan na zero).
+              </div>
+              <button class="btn-secondary" id="btn-mark-earlier-weeks" style="border-color:rgba(245,158,11,0.45);color:#FDE68A;">
+                ${earlierDone ? '✓ Tydz. 1–2 zaliczone (cofnij)' : '✓ Oznacz Tydz. 1–2 jako zaliczone'}
+              </button>
+            </div>
+
+            <div class="week-switcher-row">
+              <div class="week-pills">
+                ${RESCUE_WEEKS.map(w => {
+                  const pct = getWeekCompletionPercent(state.rescueWeeks[w.id]);
+                  const isActive = w.id === state.activeRescueWeek;
+                  return `
+                    <button class="week-pill ${isActive ? 'active' : ''}" data-select-rescue-week="${w.id}">
+                      <span class="week-pill-top">
+                        <span>${w.label} (${w.dates})</span>
+                        <span class="tabular" style="color:${pct === 100 ? '#34D399' : 'inherit'}">${pct}%</span>
+                      </span>
+                      <span class="week-pill-name">${escapeHtml(w.title)}</span>
+                    </button>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+
+            <div class="week-scope-box">
+              <div class="scope-item">
+                <span class="scope-item-label">Temat główny tygodnia</span>
+                <p>${escapeHtml(activeMeta.main)}</p>
+              </div>
+              <div class="scope-item">
+                <span class="scope-item-label">Powtórka klasy I / III</span>
+                <p>${escapeHtml(activeMeta.review)}</p>
+              </div>
+              <div class="scope-item">
+                <span class="scope-item-label">Pliki PDF &amp; Audyt</span>
+                <p>${escapeHtml(activeMeta.pdf)}</p>
+              </div>
+            </div>
+          `;
+        } else {
+          const activeLt = LONG_TERM_PLAN.find(lt => lt.id === state.activeLongTermId) || LONG_TERM_PLAN[0];
+          panel.innerHTML = `
+            <div class="mode-banner standard">
+              <div>
+                <strong>Tryb Standardowy (Grudzień–Maj)</strong> — Wolny weekend (Sob–Nie = regeneracja + sport), pełne bloki MAT/POL/ANG w tygodniu, biologia pobierana z harmonogramu długofalowego.
+              </div>
+              <button class="btn-secondary" id="btn-jump-to-longterm">Otwórz Mapę Biologii →</button>
+            </div>
+
+            <div class="standard-topic-bar">
+              <div class="standard-select-wrap">
+                <label for="standard-topic-select" style="font-size:0.78rem;color:var(--text-secondary);font-weight:600;white-space:nowrap;">Aktywny temat tygodnia:</label>
+                <select class="select-field" id="standard-topic-select">
+                  ${LONG_TERM_PLAN.map(lt => `
+                    <option value="${lt.id}" ${lt.id === state.activeLongTermId ? 'selected' : ''}>
+                      ${escapeHtml(lt.month)} (${lt.weeks}) — ${escapeHtml(lt.title)}
+                    </option>
+                  `).join('')}
+                </select>
+              </div>
+              <div class="card-meta">Aktualnie realizujesz: <strong style="color:var(--emerald);">${escapeHtml(activeLt.title)}</strong></div>
+            </div>
+          `;
+        }
+      }
+
+      function renderPlannerGrid() {
+        const weekData = getActiveWeekObj();
+        const contextMap = state.mode === 'rescue' ? DAY_CONTEXT_RESCUE : DAY_CONTEXT_STANDARD;
+        const todayId = getTodayDayId();
+
+        // Mobile Day Switcher
+        const mobileBar = document.getElementById('mobile-day-bar');
+        mobileBar.innerHTML = WEEKDAYS.map(d => {
+          const list = weekData[d.id] || [];
+          const done = list.filter(t => t.done).length;
+          const pct = list.length > 0 ? Math.round((done / list.length) * 100) : 0;
+          const active = !state.mobileShowAllDays && state.mobileSelectedDay === d.id;
+          return `
+            <button class="mobile-day-btn ${active ? 'active' : ''}" data-mobile-day="${d.id}">
+              <span>${d.short}</span>
+              <span class="mobile-day-pct tabular">${pct}%</span>
+            </button>
+          `;
+        }).join('') + `
+          <button class="mobile-day-btn ${state.mobileShowAllDays ? 'active' : ''}" data-mobile-all="1">
+            <span>7 DNI</span>
+            <span class="mobile-day-pct">${state.mobileShowAllDays ? 'ON' : 'OFF'}</span>
+          </button>
+        `;
+
+        // 7-Day Grid
+        const grid = document.getElementById('planner-grid');
+        grid.classList.toggle('show-all-days', state.mobileShowAllDays);
+
+        grid.innerHTML = WEEKDAYS.map((d, dayIndex) => {
+          const list = weekData[d.id] || [];
+          const doneCount = list.filter(t => t.done).length;
+          const pct = list.length > 0 ? Math.round((doneCount / list.length) * 100) : 0;
+          const r = 17;
+          const circ = 2 * Math.PI * r;
+          const offset = circ * (1 - pct / 100);
+          const isToday = d.id === todayId;
+          const isWeekendOff = (d.id === 'sun') || (state.mode === 'standard' && d.id === 'sat');
+          const isMobileActive = state.mobileSelectedDay === d.id;
+
+          const tasksHtml = list.map(t => {
+            const isActiveTimer = timer.activeTaskMeta && timer.activeTaskMeta.taskId === t.id;
+            return `
+              <div class="task-item ${t.done ? 'done' : ''} ${isActiveTimer ? 'active-timer-task' : ''}" data-day="${d.id}" data-task-id="${t.id}">
+                <div class="task-top">
+                  <button class="task-checkbox" data-action="toggle-task" aria-label="Odhacz zadanie">${t.done ? '✓' : ''}</button>
+                  <div class="task-text" data-action="edit-dblclick" title="Kliknij dwukrotnie, aby edytować">${escapeHtml(t.text)}</div>
+                </div>
+                <div class="task-bottom">
+                  <div class="task-meta">
+                    <span class="tag tag-${t.cat}">${t.cat}</span>
+                    <span class="task-mins tabular">${t.mins}m</span>
+                  </div>
+                  <div class="task-actions">
+                    <button class="task-btn play" data-action="play-task" title="Uruchom Rygor Budzika (${t.mins > 0 ? t.mins : 15} min)">▶</button>
+                    <button class="task-btn" data-action="edit-task" title="Edytuj treść">✎</button>
+                    ${dayIndex > 0 ? `<button class="task-btn" data-action="move-left" title="Przenieś dzień wcześniej">←</button>` : ''}
+                    ${dayIndex < 6 ? `<button class="task-btn" data-action="move-right" title="Przenieś dzień później">→</button>` : ''}
+                    <button class="task-btn del" data-action="delete-task" title="Usuń zadanie">×</button>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          const addSectionHtml = openAddFormDayId === d.id
+            ? `
+              <form class="add-task-form" data-add-form-day="${d.id}">
+                <input type="text" class="input-field" name="text" placeholder="Treść zadania..." required autofocus style="padding:6px 8px;font-size:0.79rem;" />
+                <div class="add-task-row">
+                  <select class="select-field" name="cat" style="padding:5px 7px;font-size:0.76rem;">
+                    <option value="BIO">BIO</option>
+                    <option value="MAT">MAT</option>
+                    <option value="POL">POL</option>
+                    <option value="ANG">ANG</option>
+                    <option value="SPORT">SPORT</option>
+                    <option value="RESET">RESET</option>
+                  </select>
+                  <input type="number" class="input-field tabular" name="mins" min="0" max="360" step="5" value="45" placeholder="min" style="padding:5px 7px;font-size:0.76rem;" />
+                </div>
+                <div class="add-task-actions">
+                  <button type="button" class="btn-secondary" data-cancel-add="1" style="padding:4px 9px;font-size:0.74rem;">Anuluj</button>
+                  <button type="submit" class="btn-primary" style="padding:4px 10px;font-size:0.74rem;">Dodaj</button>
+                </div>
+              </form>
+            `
+            : `<button class="add-task-trigger" data-open-add-day="${d.id}">+ Dodaj zadanie</button>`;
+
+          return `
+            <article class="day-col ${isToday ? 'is-today' : ''} ${isWeekendOff ? 'is-weekend-off' : ''} ${isMobileActive ? 'mobile-active' : ''}">
+              <div class="day-header">
+                <div>
+                  <div class="day-name-row">
+                    <span class="day-name" style="color:${d.color}">${d.short}</span>
+                    ${isToday ? `<span class="today-pill">Dziś</span>` : ''}
+                  </div>
+                  <div class="day-context">${escapeHtml(contextMap[d.id])}</div>
+                </div>
+                <svg class="day-ring-svg" width="42" height="42" viewBox="0 0 42 42" aria-label="${d.label}: ${pct}%">
+                  <circle cx="21" cy="21" r="${r}" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="4" />
+                  <circle cx="21" cy="21" r="${r}" fill="none" stroke="${d.color}" stroke-width="4"
+                    stroke-linecap="round"
+                    stroke-dasharray="${circ.toFixed(2)}"
+                    stroke-dashoffset="${offset.toFixed(2)}"
+                    transform="rotate(-90 21 21)" />
+                  <text x="21" y="24" text-anchor="middle" fill="#F1F5F9" font-size="9.5" font-weight="700" class="tabular">${pct}%</text>
+                </svg>
+              </div>
+              <div class="tasks-list">${tasksHtml}</div>
+              ${addSectionHtml}
+            </article>
+          `;
+        }).join('');
+      }
+
+      function renderTutorQuestions() {
+        const placeholders = [
+          'Np. Dlaczego w zad. 12.2 klucz CKE wymagał wspomnienia o limfocytach Th?',
+          'Np. Konkretna krzyżówka z genami sprzężonymi i obliczanie odległości w morganidach...',
+          'Np. Jak sformułować odpowiedź „wykaż związek” dla pompy sodowo-potasowej?'
+        ];
+        const container = document.getElementById('tutor-slots-container');
+        container.innerHTML = state.tutorQuestions.map((q, idx) => `
+          <div class="tutor-slot ${q.done ? 'done' : ''}">
+            <span class="tutor-num tabular">${idx + 1}</span>
+            <textarea class="tutor-input" data-tutor-text="${idx}" rows="2" placeholder="${placeholders[idx]}">${escapeHtml(q.text)}</textarea>
+            <button class="task-checkbox" data-tutor-toggle="${idx}" title="Oznacz jako omówione" style="margin-top:4px;${q.done ? 'background:var(--emerald);border-color:var(--emerald);color:#04251B;' : ''}">
+              ${q.done ? '✓' : ''}
+            </button>
+          </div>
+        `).join('');
+      }
+
+      function getAllBiologyTopicNames() {
+        const list = [];
+        BIOLOGY_CLASSES.forEach(c => {
+          c.topics.forEach(t => list.push(t.name.charAt(0).toUpperCase() + t.name.slice(1)));
+        });
+        return list;
+      }
+
+      function renderErrorNotebook() {
+        const allTopics = getAllBiologyTopicNames();
+        const topicSelect = document.getElementById('err-topic-select');
+        if (topicSelect.options.length === 0) {
+          topicSelect.innerHTML = allTopics.map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
+        }
+
+        // Populate filter dropdown with ALL + existing topics
+        const filterSelect = document.getElementById('error-filter-select');
+        const usedTopics = Array.from(new Set(state.errorNotebook.map(e => e.topic))).sort();
+        const currentFilter = state.errorFilter;
+        filterSelect.innerHTML = `<option value="ALL">Wszystkie działy (${state.errorNotebook.length})</option>` +
+          usedTopics.map(t => `<option value="${escapeHtml(t)}" ${t === currentFilter ? 'selected' : ''}>${escapeHtml(t)}</option>`).join('');
+
+        const filtered = currentFilter === 'ALL'
+          ? state.errorNotebook
+          : state.errorNotebook.filter(e => e.topic === currentFilter);
+
+        const listEl = document.getElementById('error-list-container');
+        if (filtered.length === 0) {
+          listEl.innerHTML = `<div class="empty-state">Brak wpisów dla wybranego filtra. Po każdej serii zadań dopisz tu brakujące słowa-klucze CKE.</div>`;
+          return;
+        }
+
+        listEl.innerHTML = filtered.map(entry => `
+          <div class="error-item">
+            <div class="error-item-head">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <span class="error-topic-pill">${escapeHtml(entry.topic)}</span>
+                <span class="tabular" style="font-size:0.7rem;color:var(--text-muted);">${escapeHtml(entry.date)}</span>
+              </div>
+              <button class="task-btn del" data-delete-error="${entry.id}" title="Usuń wpis">×</button>
+            </div>
+            <div class="error-detail"><strong>Mój błąd:</strong> ${escapeHtml(entry.mistake)}</div>
+            <div class="error-detail cke"><strong>Klucz CKE:</strong> ${escapeHtml(entry.cke)}</div>
+          </div>
+        `).join('');
+      }
+
+      function renderWeekView() {
+        renderAnalyticsStrip();
+        renderWeekContextPanel();
+        renderPlannerGrid();
+        renderTutorQuestions();
+        renderErrorNotebook();
+      }
+
+      /* -----------------------------------------------------------------------
+         9. RENDER TAB 2: MAPA BIOLOGII & PLAN DŁUGOFALOWY
+         ----------------------------------------------------------------------- */
+      function renderMapView() {
+        let totalTopics = 0;
+        let totalChecks = 0;
+        let theoryCount = 0;
+        let reviewCount = 0;
+        let ckeCount = 0;
+
+        BIOLOGY_CLASSES.forEach(cls => {
+          cls.topics.forEach(t => {
+            totalTopics += 1;
+            const st = state.bioMap[t.id] || { theory: false, review: false, cke: false };
+            if (st.theory) { totalChecks += 1; theoryCount += 1; }
+            if (st.review) { totalChecks += 1; reviewCount += 1; }
+            if (st.cke)    { totalChecks += 1; ckeCount += 1; }
+          });
+        });
+
+        const overallPct = Math.round((totalChecks / (totalTopics * 3)) * 100);
+        document.getElementById('map-overall-stats').textContent = `${overallPct}% (${totalChecks}/${totalTopics * 3})`;
+        document.getElementById('map-overall-bar').style.width = `${overallPct}%`;
+        document.getElementById('map-overall-breakdown').textContent =
+          `Teoria: ${theoryCount}/${totalTopics} • Powtórka: ${reviewCount}/${totalTopics} • Zadania CKE: ${ckeCount}/${totalTopics}`;
+
+        // Sync filter pills & search input
+        document.querySelectorAll('[data-map-filter]').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.mapFilter === state.mapFilter);
+        });
+        const searchEl = document.getElementById('map-search-input');
+        if (searchEl.value !== state.mapSearch) searchEl.value = state.mapSearch;
+
+        const query = state.mapSearch.trim().toLowerCase();
+        const classesGrid = document.getElementById('biology-classes-grid');
+
+        classesGrid.innerHTML = BIOLOGY_CLASSES.map(cls => {
+          let clsChecks = 0;
+          let clsClosed = 0;
+          cls.topics.forEach(t => {
+            const st = state.bioMap[t.id] || {};
+            const c = (st.theory ? 1 : 0) + (st.review ? 1 : 0) + (st.cke ? 1 : 0);
+            clsChecks += c;
+            if (c === 3) clsClosed += 1;
+          });
+          const clsPct = Math.round((clsChecks / (cls.topics.length * 3)) * 100);
+
+          const filteredTopics = cls.topics.filter(t => {
+            const st = state.bioMap[t.id] || {};
+            const isClosed = st.theory && st.review && st.cke;
+            if (state.mapFilter === 'done' && !isClosed) return false;
+            if (state.mapFilter === 'todo' && isClosed) return false;
+            if (query && !t.name.toLowerCase().includes(query)) return false;
+            return true;
+          });
+
+          const rowsHtml = filteredTopics.length > 0
+            ? filteredTopics.map(t => {
+                const st = state.bioMap[t.id] || { theory: false, review: false, cke: false };
+                const closed = st.theory && st.review && st.cke;
+                return `
+                  <div class="topic-row ${closed ? 'closed' : ''}">
+                    <span class="topic-name">${escapeHtml(t.name)}</span>
+                    <div class="stage-pills">
+                      <button class="stage-btn ${st.theory ? 'on-theory' : ''}" data-topic-id="${t.id}" data-stage="theory">Teoria</button>
+                      <button class="stage-btn ${st.review ? 'on-review' : ''}" data-topic-id="${t.id}" data-stage="review">Powtórka</button>
+                      <button class="stage-btn ${st.cke ? 'on-cke' : ''}" data-topic-id="${t.id}" data-stage="cke">Zadania CKE</button>
+                    </div>
+                  </div>
+                `;
+              }).join('')
+            : `<div class="empty-state" style="padding:14px;">Brak tematów pasujących do filtra w tej klasie.</div>`;
+
+          return `
+            <article class="class-card">
+              <div>
+                <div class="card-header" style="margin-bottom:8px;">
+                  <h3 class="card-title">${escapeHtml(cls.name)}</h3>
+                  <span class="tabular" style="font-size:0.78rem;font-weight:700;color:var(--cyan);">${clsPct}% (${clsClosed}/${cls.topics.length})</span>
+                </div>
+                <div class="progress-track" style="margin-bottom:0;">
+                  <div class="progress-fill" style="width:${clsPct}%;"></div>
+                </div>
+              </div>
+              <div class="topic-list">${rowsHtml}</div>
+            </article>
+          `;
+        }).join('');
+
+        // Long-term Dec-Apr Plan
+        const months = ['Grudzień', 'Styczeń', 'Luty', 'Marzec', 'Kwiecień'];
+        document.getElementById('longterm-plan-grid').innerHTML = months.map(month => {
+          const blocks = LONG_TERM_PLAN.filter(lt => lt.month === month);
+          return `
+            <div class="month-card">
+              <div class="month-title">
+                <span>${month}</span>
+                <span style="font-size:0.7rem;color:var(--text-muted);">${blocks.length} ${blocks.length === 1 ? 'blok' : 'bloki'}</span>
+              </div>
+              ${blocks.map(lt => {
+                const isActive = state.activeLongTermId === lt.id;
+                return `
+                  <div class="lt-block ${isActive ? 'active-lt' : ''}">
+                    <div class="lt-block-head">
+                      <span class="lt-title">${escapeHtml(lt.title)}</span>
+                      <span class="lt-weeks tabular">${lt.weeks}</span>
+                    </div>
+                    <button class="lt-set-btn" data-set-lt="${lt.id}">
+                      ${isActive ? '✓ Aktywny temat tygodnia' : 'Ustaw jako temat tygodnia'}
+                    </button>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          `;
+        }).join('');
+      }
+
+      /* -----------------------------------------------------------------------
+         10. RENDER TAB 3: NAWYKI & TREND (LIVE SVG + SMART RESET PROTECTION)
+         ----------------------------------------------------------------------- */
+      function renderHabitsView() {
+        const range = state.habitRange;
+        const dateKeys = getRecentDateKeys(range);
+        const todayKey = getLocalDateKey();
+
+        // Update range toggle buttons
+        const r7 = document.getElementById('habit-range-7');
+        const r30 = document.getElementById('habit-range-30');
+        r7.className = 'mode-btn' + (range === 7 ? ' active standard' : '');
+        r30.className = 'mode-btn' + (range === 30 ? ' active standard' : '');
+
+        document.getElementById('habit-protection-info').textContent = state.mode === 'standard'
+          ? 'Tryb Standardowy aktywny: nawyki naukowe oznaczają sobotę i niedzielę jako chroniony RESET.'
+          : 'Tryb Ratunkowy aktywny: nawyki naukowe oznaczają niedzielę jako chroniony RESET.';
+
+        // Compute per-day scores & per-habit stats
+        let totalExpected = 0;
+        let totalCompleted = 0;
+
+        const habitScores = state.habits.map(h => ({ habit: h, expected: 0, done: 0 }));
+
+        const dailySeries = dateKeys.map(dk => {
+          const info = formatShortDatePl(dk);
+          const dayLog = state.habitLogs[dk] || {};
+          let dayExpected = 0;
+          let dayDone = 0;
+
+          state.habits.forEach((h, hIdx) => {
+            const isProtected = h.type === 'study' && isProtectedRestDay(info.jsDay, state.mode);
+            if (!isProtected) {
+              dayExpected += 1;
+              totalExpected += 1;
+              habitScores[hIdx].expected += 1;
+              if (dayLog[h.id]) {
+                dayDone += 1;
+                totalCompleted += 1;
+                habitScores[hIdx].done += 1;
+              }
+            }
+          });
+
+          const pct = dayExpected > 0 ? Math.round((dayDone / dayExpected) * 100) : 100;
+          return { dateKey: dk, info, dayExpected, dayDone, pct };
+        });
+
+        // Calculate Current Streak (walking backwards from today over last 60 days)
+        const streakKeys = getRecentDateKeys(60).reverse();
+        let currentStreak = 0;
+        for (let i = 0; i < streakKeys.length; i++) {
+          const dk = streakKeys[i];
+          const info = formatShortDatePl(dk);
+          const dayLog = state.habitLogs[dk] || {};
+          const studyHabits = state.habits.filter(h => h.type === 'study');
+          const activeHabits = state.habits.filter(h => !(h.type === 'study' && isProtectedRestDay(info.jsDay, state.mode)));
+          const completedOnDay = activeHabits.filter(h => Boolean(dayLog[h.id])).length;
+
+          // On protected rest days (Sunday, or Sat+Sun in standard mode), rest day preserves streak automatically!
+          const isRest = isProtectedRestDay(info.jsDay, state.mode);
+          if (completedOnDay > 0) {
+            currentStreak += 1;
+          } else if (isRest && studyHabits.length > 0) {
+            // Protected rest day doesn't break streak if we continue checking previous days
+            // Count it only if there was activity before it, or simply bridge silently:
+            if (i === 0) {
+              // Today is rest day with 0 sport logged yet — keep checking yesterday
+              continue;
+            } else {
+              // Bridge rest day smoothly
+              continue;
+            }
+          } else {
+            if (i === 0) {
+              // Today hasn't been logged yet — allow streak from yesterday
+              continue;
+            }
+            break;
+          }
+        }
+
+        // Overall regularity %
+        const regularityPct = totalExpected > 0 ? Math.round((totalCompleted / totalExpected) * 100) : 0;
+
+        // Best habit
+        let bestHabitText = '—';
+        let bestHabitSub = 'Brak danych w zakresie';
+        const ranked = habitScores
+          .map(hs => ({
+            name: hs.habit.name,
+            pct: hs.expected > 0 ? Math.round((hs.done / hs.expected) * 100) : 0,
+            done: hs.done,
+            expected: hs.expected
+          }))
+          .sort((a, b) => b.pct - a.pct || b.done - a.done);
+
+        if (ranked.length > 0 && ranked[0].done > 0) {
+          bestHabitText = `${ranked[0].pct}%`;
+          bestHabitSub = `${ranked[0].name} (${ranked[0].done}/${ranked[0].expected})`;
+        }
+
+        // Today balance
+        const todaySeries = dailySeries[dailySeries.length - 1];
+        const todayIsRest = isProtectedRestDay(new Date().getDay(), state.mode);
+
+        // Render 4 KPI cards
+        document.getElementById('habits-kpi-grid').innerHTML = `
+          <div class="kpi-card">
+            <span class="kpi-label">Wynik regularności (${range}d)</span>
+            <span class="kpi-value tabular" style="color:var(--emerald);">${regularityPct}%</span>
+            <span class="kpi-sub tabular">${totalCompleted} z ${totalExpected} aktywnych pól</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Aktualna passa</span>
+            <span class="kpi-value tabular" style="color:var(--cyan);">${currentStreak} ${currentStreak === 1 ? 'dzień' : 'dni'}</span>
+            <span class="kpi-sub">Dni RESET nie przerywają serii</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Najlepszy nawyk</span>
+            <span class="kpi-value tabular" style="color:var(--violet);">${bestHabitText}</span>
+            <span class="kpi-sub" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escapeHtml(bestHabitSub)}">${escapeHtml(bestHabitSub)}</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Bilans dzisiaj</span>
+            <span class="kpi-value tabular" style="color:var(--amber);">${todaySeries.dayDone}/${todaySeries.dayExpected}</span>
+            <span class="kpi-sub">${todayIsRest ? 'Ochrona RESET aktywna dzisiaj' : `Dzisiaj: ${todaySeries.pct}% celu`}</span>
+          </div>
+        `;
+
+        // Render SVG Trend Line + Area Chart
+        const svgW = 860;
+        const svgH = 185;
+        const padL = 36;
+        const padR = 18;
+        const padT = 16;
+        const padB = 28;
+        const plotW = svgW - padL - padR;
+        const plotH = svgH - padT - padB;
+
+        const points = dailySeries.map((d, idx) => {
+          const x = padL + (dailySeries.length > 1 ? (idx / (dailySeries.length - 1)) * plotW : plotW / 2);
+          const y = padT + plotH - (d.pct / 100) * plotH;
+          return { x, y, ...d };
+        });
+
+        const linePath = points.map((p, idx) => `${idx === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+        const areaPath = points.length > 0
+          ? `${linePath} L ${points[points.length - 1].x.toFixed(1)} ${(padT + plotH).toFixed(1)} L ${points[0].x.toFixed(1)} ${(padT + plotH).toFixed(1)} Z`
+          : '';
+
+        const labelStep = range === 30 ? 5 : 1;
+
+        document.getElementById('habits-trend-svg-wrap').innerHTML = `
+          <svg viewBox="0 0 ${svgW} ${svgH}" width="100%" height="185" role="img" aria-label="Wykres trendu regularności nawyków">
+            <defs>
+              <linearGradient id="trendAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#06B6D4" stop-opacity="0.34" />
+                <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0.02" />
+              </linearGradient>
+              <linearGradient id="trendStrokeGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#8B5CF6" />
+                <stop offset="50%" stop-color="#06B6D4" />
+                <stop offset="100%" stop-color="#10B981" />
+              </linearGradient>
+            </defs>
+
+            ${[0, 50, 100].map(level => {
+              const y = padT + plotH - (level / 100) * plotH;
+              return `
+                <line x1="${padL}" y1="${y}" x2="${svgW - padR}" y2="${y}" stroke="rgba(255,255,255,0.07)" stroke-dasharray="4 4" />
+                <text x="${padL - 8}" y="${y + 3}" text-anchor="end" fill="#64748B" font-size="10" class="tabular">${level}%</text>
+              `;
+            }).join('')}
+
+            ${areaPath ? `<path d="${areaPath}" fill="url(#trendAreaGrad)" />` : ''}
+            ${linePath ? `<path d="${linePath}" fill="none" stroke="url(#trendStrokeGrad)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />` : ''}
+
+            ${points.map((p, idx) => {
+              const showLabel = idx === 0 || idx === points.length - 1 || idx % labelStep === 0;
+              return `
+                <g>
+                  <title>${p.info.dow} ${p.info.num}: ${p.pct}% (${p.dayDone}/${p.dayExpected})</title>
+                  <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${range === 7 ? 4.5 : 3}" fill="#0B0E14" stroke="#22D3EE" stroke-width="2" />
+                  ${showLabel ? `<text x="${p.x.toFixed(1)}" y="${svgH - 7}" text-anchor="middle" fill="#94A3B8" font-size="10" class="tabular">${range === 7 ? p.info.dow + ' ' + p.info.num : p.info.num}</text>` : ''}
+                </g>
+              `;
+            }).join('')}
+          </svg>
+        `;
+
+        // Render Matrix Table
+        const typeLabels = {
+          study: 'Naukowy • chroni RESET',
+          sport: 'Sportowy',
+          recovery: 'Regeneracyjny'
+        };
+
+        let thead = `<thead><tr><th>Nawyk</th>`;
+        dailySeries.forEach(d => {
+          const isToday = d.dateKey === todayKey;
+          thead += `<th class="${isToday ? 'is-today-col' : ''} tabular"><div>${d.info.dow}</div><div style="font-weight:500;opacity:0.75;">${d.info.num}</div></th>`;
+        });
+        thead += `</tr></thead>`;
+
+        let tbody = `<tbody>`;
+        state.habits.forEach(h => {
+          tbody += `<tr><td>
+            <div class="habit-name-cell">
+              <div class="habit-title-wrap">
+                <span class="habit-title">${escapeHtml(h.name)}</span>
+                <span class="habit-type-sub">${typeLabels[h.type] || 'Nawyk'}</span>
+              </div>
+              <button class="task-btn del" data-delete-habit="${h.id}" title="Usuń nawyk">×</button>
+            </div>
+          </td>`;
+
+          dailySeries.forEach(d => {
+            const isProtected = h.type === 'study' && isProtectedRestDay(d.info.jsDay, state.mode);
+            if (isProtected) {
+              tbody += `<td><span class="habit-reset-badge" title="Chroniony dzień regeneracji — nie obniża wyniku ani passy">RESET</span></td>`;
+            } else {
+              const checked = Boolean(state.habitLogs[d.dateKey] && state.habitLogs[d.dateKey][h.id]);
+              tbody += `<td><button class="habit-cell-btn ${checked ? 'done' : ''}" data-habit-toggle="${h.id}" data-habit-date="${d.dateKey}" aria-label="${escapeHtml(h.name)} ${d.dateKey}">${checked ? '✓' : ''}</button></td>`;
+            }
+          });
+
+          tbody += `</tr>`;
+        });
+        tbody += `</tbody>`;
+
+        document.getElementById('habit-matrix-table').innerHTML = thead + tbody;
+      }
+
+      /* -----------------------------------------------------------------------
+         11. RENDER STICKY EXECUTION PROTOCOL BAR & DRAWER
+         ----------------------------------------------------------------------- */
+      function renderExecutionBar() {
+        const display = document.getElementById('exec-timer-display');
+        display.textContent = formatClock(timer.remainingSeconds);
+        display.className = 'exec-timer-readout tabular' +
+          (timer.running ? ' running' : '') +
+          (timer.mode === 'cke' ? ' cke-mode' : '');
+
+        const modeLabel = document.getElementById('exec-mode-label');
+        const taskLabel = document.getElementById('exec-active-task-label');
+
+        if (timer.mode === 'cke') {
+          modeLabel.textContent = 'Zasada Zdartych Płyt • Weryfikacja z kluczem CKE (10 min)';
+          taskLabel.textContent = 'Sprawdź 5 rozwiązanych zadań z kluczem CKE i zapisz błędy';
+        } else {
+          modeLabel.textContent = 'Protokół Egzekucji • Rygor Budzika';
+          taskLabel.textContent = timer.activeTaskMeta
+            ? `${timer.activeTaskMeta.cat} • ${timer.activeTaskMeta.text}`
+            : `Sesja własna (${Math.round(timer.totalSeconds / 60)} min) — lub kliknij ▶ na zadaniu`;
+        }
+
+        const toggleBtn = document.getElementById('exec-btn-toggle');
+        if (timer.running) {
+          toggleBtn.textContent = '❚❚ Pauza';
+          toggleBtn.className = 'exec-quick-btn pause';
+        } else {
+          toggleBtn.textContent = '▶ Start';
+          toggleBtn.className = 'exec-quick-btn start';
+        }
+
+        const expandBtn = document.getElementById('exec-btn-expand');
+        const drawer = document.getElementById('exec-drawer');
+        drawer.classList.toggle('open', timer.drawerOpen);
+        expandBtn.textContent = timer.drawerOpen ? 'Panel ▾' : 'Panel ▴';
+
+        // Presets
+        const presetGrid = document.getElementById('exec-preset-grid');
+        const currentMins = Math.round(timer.totalSeconds / 60);
+        presetGrid.innerHTML = TIMER_PRESETS.map(m => `
+          <button class="preset-btn tabular ${timer.mode === 'alarm' && currentMins === m ? 'active' : ''}" data-preset-min="${m}">
+            ${m} min
+          </button>
+        `).join('');
+
+        // Zdarte Płyty slots (5 tasks)
+        const doneCount = state.zdarteSlots.filter(Boolean).length;
+        document.querySelectorAll('#zdarte-mini-indicator .mini-dot').forEach((dot, idx) => {
+          dot.classList.toggle('on', Boolean(state.zdarteSlots[idx]));
+        });
+
+        document.getElementById('zdarte-slots-grid').innerHTML = state.zdarteSlots.map((checked, idx) => `
+          <button class="zdarte-slot ${checked ? 'checked' : ''}" data-zdarte-idx="${idx}">
+            <span style="font-size:0.9rem;">${checked ? '✓' : idx + 1}</span>
+            <span>Zad. ${idx + 1}</span>
+          </button>
+        `).join('');
+
+        const zStatus = document.getElementById('zdarte-status-text');
+        if (doneCount === 5) {
+          zStatus.textContent = '5/5 zadań ukończone! Trwa 10-minutowa weryfikacja z kluczem CKE.';
+          zStatus.style.color = '#6EE7B7';
+        } else {
+          zStatus.textContent = `Rozwiązuj bez zaglądania do klucza (${doneCount}/5). Po 5. zadaniu ruszy timer 10 min CKE.`;
+          zStatus.style.color = '';
+        }
+      }
+
+      /* -----------------------------------------------------------------------
+         12. MASTER RENDER FUNCTION
+         ----------------------------------------------------------------------- */
+      function renderAll() {
+        renderHeader();
+        if (state.activeTab === 'week') renderWeekView();
+        else if (state.activeTab === 'map') renderMapView();
+        else if (state.activeTab === 'habits') renderHabitsView();
+        renderExecutionBar();
+      }
+
+      /* -----------------------------------------------------------------------
+         13. EVENT LISTENERS & INTERACTIONS
+         ----------------------------------------------------------------------- */
+      function startInlineEdit(taskEl, dayId, taskId) {
+        const weekData = getActiveWeekObj();
+        const task = (weekData[dayId] || []).find(t => t.id === taskId);
+        if (!task) return;
+        const textNode = taskEl.querySelector('.task-text');
+        if (!textNode || taskEl.querySelector('.task-edit-input')) return;
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'task-edit-input';
+        input.value = task.text;
+        textNode.replaceWith(input);
+        input.focus();
+        input.select();
+
+        let committed = false;
+        const commit = (save) => {
+          if (committed) return;
+          committed = true;
+          if (save) {
+            const val = input.value.trim();
+            if (val) {
+              task.text = val;
+              saveState();
+            }
+          }
+          renderWeekView();
+        };
+
+        input.addEventListener('keydown', e => {
+          if (e.key === 'Enter') { e.preventDefault(); commit(true); }
+          if (e.key === 'Escape') { e.preventDefault(); commit(false); }
+        });
+        input.addEventListener('blur', () => commit(true));
+      }
+
+      // 1) Navigation Tabs
+      document.querySelectorAll('.nav-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.activeTab = btn.dataset.tab;
+          saveState();
+          renderAll();
+        });
+      });
+
+      // 2) Mode Switcher (Rescue vs Standard)
+      document.querySelectorAll('[data-mode]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const newMode = btn.dataset.mode;
+          if (state.mode === newMode) return;
+          state.mode = newMode;
+          openAddFormDayId = null;
+          saveState();
+          renderAll();
+          showToast(newMode === 'rescue'
+            ? 'Przełączono na Tryb Ratunkowy (Listopad).'
+            : 'Przełączono na Tryb Standardowy (Grudzień–Maj) z wolnym weekendem.');
+        });
+      });
+
+      // 3) Export / Import JSON & Safe Reset Modal
+      document.getElementById('btn-export-json').addEventListener('click', () => {
+        try {
+          const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `quiet-progress-biologia-${getLocalDateKey()}.json`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+          showToast('Wyeksportowano kopię zapasową JSON.');
+        } catch (err) {
+          showToast('Nie udało się wyeksportować pliku JSON.', 'warn');
+        }
+      });
+
+      const importInput = document.getElementById('import-file-input');
+      document.getElementById('btn-import-json').addEventListener('click', () => {
+        importInput.value = '';
+        importInput.click();
+      });
+
+      importInput.addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const parsed = JSON.parse(String(reader.result));
+            state = validateAndMergeState(parsed);
+            saveState();
+            renderAll();
+            showToast('Zaimportowano dane z pliku JSON.');
+          } catch (err) {
+            showToast('Błąd importu: nieprawidłowy format pliku JSON.', 'warn');
+          }
+        };
+        reader.readAsText(file);
+      });
+
+      const confirmModal = document.getElementById('confirm-modal');
+      document.getElementById('btn-reset-data').addEventListener('click', () => {
+        confirmModal.classList.add('open');
+      });
+      document.getElementById('modal-cancel-btn').addEventListener('click', () => {
+        confirmModal.classList.remove('open');
+      });
+      confirmModal.addEventListener('click', (e) => {
+        if (e.target === confirmModal) confirmModal.classList.remove('open');
+      });
+      document.getElementById('modal-confirm-btn').addEventListener('click', () => {
+        stopTimerInterval();
+        hideExecAlert();
+        state = createDefaultState();
+        openAddFormDayId = null;
+        saveState();
+        confirmModal.classList.remove('open');
+        setTimerDuration(45, 'alarm', null);
+        renderAll();
+        showToast('Wszystkie dane zostały bezpiecznie zresetowane.');
+      });
+
+      // 4) Tab 1: PDF Chips Delegation
+      document.getElementById('pdf-chips-container').addEventListener('click', (e) => {
+        const chip = e.target.closest('[data-pdf-toggle]');
+        if (!chip) return;
+        const pid = chip.dataset.pdfToggle;
+        state.pdfBacklog[pid] = !state.pdfBacklog[pid];
+        // Cross-view sync with Biology Map (Klasa III -> Zadania CKE)
+        const meta = PDF_BACKLOG_META.find(p => p.id === pid);
+        if (meta && state.bioMap[meta.linkedTopicId]) {
+          state.bioMap[meta.linkedTopicId].cke = state.pdfBacklog[pid];
+        }
+        saveState();
+        renderAnalyticsStrip();
+      });
+
+      // 5) Tab 1: Week Context Panel Delegation
+      document.getElementById('week-context-panel').addEventListener('click', (e) => {
+        const wBtn = e.target.closest('[data-select-rescue-week]');
+        if (wBtn) {
+          state.activeRescueWeek = wBtn.dataset.selectRescueWeek;
+          openAddFormDayId = null;
+          saveState();
+          renderWeekView();
+          return;
+        }
+        if (e.target.closest('#btn-mark-earlier-weeks')) {
+          const allDone = getWeekCompletionPercent(state.rescueWeeks.w1) === 100 &&
+                          getWeekCompletionPercent(state.rescueWeeks.w2) === 100;
+          const targetDone = !allDone;
+          ['w1', 'w2'].forEach(wid => {
+            WEEKDAYS.forEach(d => {
+              (state.rescueWeeks[wid][d.id] || []).forEach(t => { t.done = targetDone; });
+            });
+          });
+          saveState();
+          renderWeekView();
+          showToast(targetDone ? 'Oznaczono Tydzień 1 i 2 jako zaliczone!' : 'Cofnięto oznaczenie Tygodnia 1 i 2.');
+          return;
+        }
+        if (e.target.closest('#btn-jump-to-longterm')) {
+          state.activeTab = 'map';
+          saveState();
+          renderAll();
+        }
+      });
+
+      document.getElementById('week-context-panel').addEventListener('change', (e) => {
+        if (e.target.id === 'standard-topic-select') {
+          state.activeLongTermId = e.target.value;
+          openAddFormDayId = null;
+          saveState();
+          renderWeekView();
+        }
+      });
+
+      // 6) Tab 1: Mobile Day Switcher
+      document.getElementById('mobile-day-bar').addEventListener('click', (e) => {
+        const dayBtn = e.target.closest('[data-mobile-day]');
+        if (dayBtn) {
+          state.mobileShowAllDays = false;
+          state.mobileSelectedDay = dayBtn.dataset.mobileDay;
+          saveState();
+          renderPlannerGrid();
+          return;
+        }
+        if (e.target.closest('[data-mobile-all]')) {
+          state.mobileShowAllDays = !state.mobileShowAllDays;
+          saveState();
+          renderPlannerGrid();
+        }
+      });
+
+      // 7) Tab 1: 7-Day Planner Grid Delegation
+      const plannerGrid = document.getElementById('planner-grid');
+
+      plannerGrid.addEventListener('click', (e) => {
+        const openAdd = e.target.closest('[data-open-add-day]');
+        if (openAdd) {
+          openAddFormDayId = openAdd.dataset.openAddDay;
+          renderPlannerGrid();
+          return;
+        }
+        if (e.target.closest('[data-cancel-add]')) {
+          openAddFormDayId = null;
+          renderPlannerGrid();
+          return;
+        }
+
+        const actionBtn = e.target.closest('[data-action]');
+        if (!actionBtn) return;
+        const action = actionBtn.dataset.action;
+        if (action === 'edit-dblclick') return;
+
+        const taskEl = actionBtn.closest('.task-item');
+        if (!taskEl) return;
+        const dayId = taskEl.dataset.day;
+        const taskId = taskEl.dataset.taskId;
+        const weekData = getActiveWeekObj();
+        const dayTasks = weekData[dayId] || [];
+        const idx = dayTasks.findIndex(t => t.id === taskId);
+        if (idx === -1) return;
+        const task = dayTasks[idx];
+
+        if (action === 'toggle-task') {
+          task.done = !task.done;
+          syncTaskCheckWithHabits(task);
+          saveState();
+          renderAnalyticsStrip();
+          renderPlannerGrid();
+        } else if (action === 'play-task') {
+          const mins = task.mins > 0 ? task.mins : 15;
+          if (task.mins === 0) {
+            showToast('Zadanie ma 0m — uruchomiono 15-minutową sesję fokusową.');
+          }
+          setTimerDuration(mins, 'alarm', { dayId, taskId, text: task.text, cat: task.cat });
+          startTimer();
+        } else if (action === 'edit-task') {
+          startInlineEdit(taskEl, dayId, taskId);
+        } else if (action === 'delete-task') {
+          dayTasks.splice(idx, 1);
+          saveState();
+          renderAnalyticsStrip();
+          renderPlannerGrid();
+        } else if (action === 'move-left' || action === 'move-right') {
+          const curDayIdx = WEEKDAYS.findIndex(d => d.id === dayId);
+          const nextDayIdx = action === 'move-left' ? curDayIdx - 1 : curDayIdx + 1;
+          if (nextDayIdx >= 0 && nextDayIdx < WEEKDAYS.length) {
+            const targetDayId = WEEKDAYS[nextDayIdx].id;
+            dayTasks.splice(idx, 1);
+            weekData[targetDayId].push(task);
+            saveState();
+            renderAnalyticsStrip();
+            renderPlannerGrid();
+            showToast(`Przeniesiono zadanie na ${WEEKDAYS[nextDayIdx].label}.`);
+          }
+        }
+      });
+
+      plannerGrid.addEventListener('dblclick', (e) => {
+        const textEl = e.target.closest('[data-action="edit-dblclick"]');
+        if (!textEl) return;
+        const taskEl = textEl.closest('.task-item');
+        if (!taskEl) return;
+        startInlineEdit(taskEl, taskEl.dataset.day, taskEl.dataset.taskId);
+      });
+
+      plannerGrid.addEventListener('submit', (e) => {
+        const form = e.target.closest('[data-add-form-day]');
+        if (!form) return;
+        e.preventDefault();
+        const dayId = form.dataset.addFormDay;
+        const text = form.elements.text.value.trim();
+        const cat = form.elements.cat.value;
+        const mins = Math.max(0, Math.min(360, Number(form.elements.mins.value) || 0));
+        if (!text) return;
+
+        const weekData = getActiveWeekObj();
+        weekData[dayId].push({
+          id: uid('tsk'),
+          text,
+          cat,
+          mins,
+          done: false
+        });
+        openAddFormDayId = null;
+        saveState();
+        renderAnalyticsStrip();
+        renderPlannerGrid();
+      });
+
+      // 8) Tab 1: Tutor 3 Questions
+      const tutorContainer = document.getElementById('tutor-slots-container');
+      tutorContainer.addEventListener('input', (e) => {
+        const idx = e.target.dataset.tutorText;
+        if (idx === undefined) return;
+        state.tutorQuestions[Number(idx)].text = e.target.value;
+        saveState();
+      });
+
+      tutorContainer.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-tutor-toggle]');
+        if (!btn) return;
+        const idx = Number(btn.dataset.tutorToggle);
+        state.tutorQuestions[idx].done = !state.tutorQuestions[idx].done;
+        saveState();
+        renderTutorQuestions();
+      });
+
+      document.getElementById('btn-clear-tutor-done').addEventListener('click', () => {
+        let cleared = 0;
+        state.tutorQuestions.forEach(q => {
+          if (q.done) {
+            q.text = '';
+            q.done = false;
+            cleared += 1;
+          }
+        });
+        saveState();
+        renderTutorQuestions();
+        showToast(cleared > 0 ? 'Wyczyszczono omówione pytania.' : 'Brak odhaczonych pytań do wyczyszczenia.');
+      });
+
+      // 9) Tab 1: CKE Error Notebook
+      document.getElementById('error-notebook-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const topic = document.getElementById('err-topic-select').value;
+        const mistakeInput = document.getElementById('err-mistake-input');
+        const ckeInput = document.getElementById('err-cke-input');
+        const mistake = mistakeInput.value.trim();
+        const cke = ckeInput.value.trim();
+        if (!mistake || !cke) return;
+
+        state.errorNotebook.unshift({
+          id: uid('err'),
+          topic,
+          mistake,
+          cke,
+          date: getLocalDateKey()
+        });
+        mistakeInput.value = '';
+        ckeInput.value = '';
+        autoTickHabitToday('hab_errors');
+        saveState();
+        renderErrorNotebook();
+        showToast('Dodano wpis do Zeszytu błędów CKE.');
+      });
+
+      document.getElementById('error-filter-select').addEventListener('change', (e) => {
+        state.errorFilter = e.target.value;
+        saveState();
+        renderErrorNotebook();
+      });
+
+      document.getElementById('error-list-container').addEventListener('click', (e) => {
+        const delBtn = e.target.closest('[data-delete-error]');
+        if (!delBtn) return;
+        const id = delBtn.dataset.deleteError;
+        state.errorNotebook = state.errorNotebook.filter(item => item.id !== id);
+        saveState();
+        renderErrorNotebook();
+      });
+
+      // 10) Tab 2: Biology Map & Long-Term Schedule
+      document.querySelectorAll('[data-map-filter]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.mapFilter = btn.dataset.mapFilter;
+          saveState();
+          renderMapView();
+        });
+      });
+
+      document.getElementById('map-search-input').addEventListener('input', (e) => {
+        state.mapSearch = e.target.value;
+        saveState();
+        renderMapView();
+      });
+
+      document.getElementById('biology-classes-grid').addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-topic-id]');
+        if (!btn) return;
+        const tid = btn.dataset.topicId;
+        const stage = btn.dataset.stage;
+        if (!state.bioMap[tid]) state.bioMap[tid] = { theory: false, review: false, cke: false };
+        state.bioMap[tid][stage] = !state.bioMap[tid][stage];
+
+        // Cross-view sync back to PDF backlog if Klasa III CKE stage changed
+        if (stage === 'cke') {
+          const pdfMeta = PDF_BACKLOG_META.find(p => p.linkedTopicId === tid);
+          if (pdfMeta) {
+            state.pdfBacklog[pdfMeta.id] = state.bioMap[tid].cke;
+          }
+        }
+
+        saveState();
+        renderMapView();
+      });
+
+      document.getElementById('longterm-plan-grid').addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-set-lt]');
+        if (!btn) return;
+        const ltId = btn.dataset.setLt;
+        const meta = LONG_TERM_PLAN.find(item => item.id === ltId);
+        if (!meta) return;
+
+        state.activeLongTermId = ltId;
+        state.mode = 'standard';
+        state.activeTab = 'week';
+        saveState();
+        renderAll();
+        showToast(`Ustawiono temat tygodnia: ${meta.title} (Tryb Standardowy).`);
+      });
+
+      // 11) Tab 3: Habits & Trend
+      document.querySelectorAll('[data-habit-range]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.habitRange = Number(btn.dataset.habitRange) === 30 ? 30 : 7;
+          saveState();
+          renderHabitsView();
+        });
+      });
+
+      document.getElementById('habit-matrix-table').addEventListener('click', (e) => {
+        const cellBtn = e.target.closest('[data-habit-toggle]');
+        if (cellBtn) {
+          const hid = cellBtn.dataset.habitToggle;
+          const dateKey = cellBtn.dataset.habitDate;
+          if (!state.habitLogs[dateKey]) state.habitLogs[dateKey] = {};
+          if (state.habitLogs[dateKey][hid]) {
+            delete state.habitLogs[dateKey][hid];
+          } else {
+            state.habitLogs[dateKey][hid] = true;
+          }
+          saveState();
+          renderHabitsView();
+          return;
+        }
+
+        const delBtn = e.target.closest('[data-delete-habit]');
+        if (delBtn) {
+          const hid = delBtn.dataset.deleteHabit;
+          state.habits = state.habits.filter(h => h.id !== hid);
+          saveState();
+          renderHabitsView();
+          showToast('Usunięto nawyk z matrycy.');
+        }
+      });
+
+      document.getElementById('habit-add-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const nameInput = document.getElementById('new-habit-name');
+        const typeSelect = document.getElementById('new-habit-type');
+        const name = nameInput.value.trim();
+        if (!name) return;
+
+        state.habits.push({
+          id: uid('hab'),
+          name,
+          type: typeSelect.value
+        });
+        nameInput.value = '';
+        saveState();
+        renderHabitsView();
+        showToast('Dodano nowy nawyk.');
+      });
+
+      // 12) Sticky Execution Protocol Controls
+      document.getElementById('exec-btn-toggle').addEventListener('click', () => {
+        if (timer.running) pauseTimer();
+        else startTimer();
+      });
+
+      document.getElementById('exec-btn-reset').addEventListener('click', () => {
+        resetTimer();
+      });
+
+      document.getElementById('exec-btn-expand').addEventListener('click', () => {
+        timer.drawerOpen = !timer.drawerOpen;
+        renderExecutionBar();
+      });
+
+      document.getElementById('zdarte-mini-indicator').addEventListener('click', () => {
+        timer.drawerOpen = true;
+        renderExecutionBar();
+      });
+
+      document.getElementById('exec-btn-sound-test').addEventListener('click', () => {
+        AudioEngine.playChime('alarm');
+        showToast('Odtworzono sygnał Web Audio API.');
+      });
+
+      document.getElementById('exec-preset-grid').addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-preset-min]');
+        if (!btn) return;
+        const mins = Number(btn.dataset.presetMin);
+        setTimerDuration(mins, 'alarm', null);
+      });
+
+      document.getElementById('zdarte-slots-grid').addEventListener('click', (e) => {
+        const slot = e.target.closest('[data-zdarte-idx]');
+        if (!slot) return;
+        const idx = Number(slot.dataset.zdarteIdx);
+        state.zdarteSlots[idx] = !state.zdarteSlots[idx];
+        saveState();
+
+        const allFive = state.zdarteSlots.every(Boolean);
+        if (allFive) {
+          AudioEngine.ensureContext();
+          setTimerDuration(10, 'cke', null);
+          startTimer();
+          showToast('5/5 zadań zrobione! Uruchomiono automatycznie 10 min na klucz CKE.');
+        } else {
+          renderExecutionBar();
+        }
+      });
+
+      document.getElementById('zdarte-btn-reset').addEventListener('click', () => {
+        state.zdarteSlots = [false, false, false, false, false];
+        if (timer.mode === 'cke') {
+          setTimerDuration(45, 'alarm', null);
+        }
+        saveState();
+        renderExecutionBar();
+        showToast('Zresetowano serię Zdartych Płyt (0/5).');
+      });
+
+      document.getElementById('exec-alert-dismiss').addEventListener('click', () => {
+        hideExecAlert();
+      });
+
+      document.getElementById('exec-alert-mark-done').addEventListener('click', () => {
+        if (timer.activeTaskMeta) {
+          const { dayId, taskId } = timer.activeTaskMeta;
+          const weekData = getActiveWeekObj();
+          const task = (weekData[dayId] || []).find(t => t.id === taskId);
+          if (task && !task.done) {
+            task.done = true;
+            syncTaskCheckWithHabits(task);
+            saveState();
+            if (state.activeTab === 'week') renderWeekView();
+            showToast('Odhaczono ukończone zadanie!');
+          }
+        }
+        hideExecAlert();
+      });
+
+      /* -----------------------------------------------------------------------
+         14. INITIALIZATION
+         ----------------------------------------------------------------------- */
+      renderAll();
+    })();
+  </script>
+</body>
+</html>
